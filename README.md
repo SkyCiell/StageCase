@@ -98,7 +98,7 @@ StageCase/
 │   │   └── utils/           # Formatters & design utilities
 │   ├── tailwind.config.js   # StageCase QinXiao theme configuration
 │   └── index.html
-├── mobile/                  # React Native Expo App
+├── mobile/                  # React Native Expo App → github.com/SkyCiell/StageCase---Mobile
 ├── docs/
 │   └── schema.sql           # Complete MySQL database schema
 └── README.md
