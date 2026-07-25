@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // User Custom Palette
+        // ── User Palette (public site) ──
         background:     '#728EB7',        // Slate Blue
         'bg-secondary': '#5E7BA4',        // Deep Slate Blue
         surface:        '#8DA7CC',        // Soft Steel Blue Surface
@@ -19,6 +19,15 @@ export default {
         'text-primary': '#F5F3F5',        // Soft Off-White
         'text-muted':   '#D3CCD0',        // Silver Muted Gray
         'text-secondary':'#D3CCD0',
+
+        // ── Admin Panel — dedicated dark tokens for clear contrast ──
+        'admin-bg':      '#141820',        // Very dark navy — page bg
+        'admin-sidebar': '#1A2030',        // Slightly lighter — sidebar
+        'admin-surface': '#222A3A',        // Card / panel surface
+        'admin-card':    '#2A3448',        // Elevated card
+        'admin-border':  'rgba(245,243,245,0.08)',
+        'admin-muted':   '#8DA7CC',        // Muted text in admin
+        'admin-accent':  '#2A629C',        // Accent blue
 
         // Legacy Aliases
         jade: {

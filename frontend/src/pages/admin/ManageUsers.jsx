@@ -1,47 +1,43 @@
-import { useQuery } from '@tanstack/react-query';
-import { adminService } from '../../services';
+﻿import { useQuery } from "@tanstack/react-query";
+import { adminService } from "../../services";
+
+const S = { muted: "rgba(141,167,204,0.5)", white: "#F5F3F5", accent: "#8DA7CC", dimmed: "rgba(245,243,245,0.45)" };
+
+const TH = ({ children }) => (
+  <th className="py-3.5 px-5 font-mono font-bold text-[10px] uppercase tracking-[0.15em]" style={{ color: S.muted }}>{children}</th>
+);
 
 export default function ManageUsers() {
   const { data: users = [] } = useQuery({
-    queryKey: ['admin-users'],
+    queryKey: ["admin-users"],
     queryFn: () => adminService.users(),
-    select: d => d.data.data,
+    select: (d) => d.data.data,
   });
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="border-b border-white/[0.06] pb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-4 h-[1px] bg-bronze" />
-          <span className="text-[10px] text-bronze tracking-[0.25em] uppercase font-semibold">
-            User Accounts
-          </span>
-        </div>
-        <h1 className="font-display font-black text-ivory text-3xl tracking-tight">
-          Registered Fans & Admins
-        </h1>
+    <div className="space-y-6 max-w-5xl">
+      <div className="mb-8">
+        <p className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2" style={{ color: S.muted }}>User Accounts</p>
+        <h1 className="font-display font-black uppercase tracking-tight" style={{ fontSize: "clamp(1.6rem,4vw,2.4rem)", color: S.white, lineHeight: 1 }}>Registered Fans</h1>
       </div>
 
-      {/* Table block */}
-      <div className="border border-white/[0.06] bg-surface">
+      <div style={{ background: "var(--admin-surface)", border: "1px solid var(--admin-border)" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-white/[0.06] bg-graphite text-text-muted font-mono uppercase tracking-wider">
-              <tr>
-                <th className="py-4 px-5 font-semibold">Name</th>
-                <th className="py-4 px-5 font-semibold">Email</th>
-                <th className="py-4 px-5 font-semibold">Role</th>
-                <th className="py-4 px-5 font-semibold">Joined Date</th>
+            <thead>
+              <tr style={{ borderBottom: "1px solid var(--admin-border)", background: "var(--admin-card)" }}>
+                <TH>Name</TH><TH>Email</TH><TH>Role</TH><TH>Joined</TH>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
-              {users.map(u => (
-                <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-4 px-5 font-bold text-ivory text-sm">{u.name}</td>
-                  <td className="py-4 px-5 text-text-secondary">{u.email}</td>
-                  <td className="py-4 px-5 uppercase font-mono font-bold text-bronze">{u.role}</td>
-                  <td className="py-4 px-5 text-text-muted font-mono">{new Date(u.created_at).toLocaleDateString()}</td>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} style={{ borderBottom: "1px solid rgba(245,243,245,0.04)" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(42,98,156,0.06)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <td className="py-4 px-5 font-bold" style={{ color: S.white }}>{u.name}</td>
+                  <td className="py-4 px-5" style={{ color: S.dimmed }}>{u.email}</td>
+                  <td className="py-4 px-5 font-mono font-bold uppercase text-[10px] tracking-widest" style={{ color: S.accent }}>{u.role}</td>
+                  <td className="py-4 px-5 font-mono" style={{ color: S.muted }}>{new Date(u.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
