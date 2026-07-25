@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-text-primary font-sans antialiased min-h-screen overflow-x-hidden;
+  }
+
+  ::selection {
+    background-color: #2A629C;
+    color: #F5F3F5;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #728EB7;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #343C4E;
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2A629C;
+  }
+}
+
+@layer components {
+  /* Container */
+  .container-premium {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Ticket Stub Card Layout (Unique Notched Concert Ticket Design) */
+  .ticket-card {
+    @apply relative bg-surface text-text-primary border border-text-primary/20 shadow-xl transition-all duration-300;
+  }
+  .ticket-card:hover {
+    border-color: #2A629C;
+    transform: translateY(-2px);
+  }
+
+  .card-premium {
+    @apply bg-surface text-text-primary border border-text-primary/20 shadow-lg transition-all duration-300;
+  }
+  .card-premium:hover {
+    border-color: #2A629C;
+  }
+
+  .card-flat {
+    @apply bg-surface border border-text-primary/20 p-6 transition-all duration-300;
+  }
+
+  /* Floating Navbar */
+  .navbar-floating {
+    @apply bg-primary text-text-primary border border-text-primary/20 shadow-2xl;
+  }
+
+  /* Button System */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-secondary text-text-primary font-bold text-sm transition-all duration-300 border border-text-primary/20 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary:hover {
+    background-color: #343C4E;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary border border-text-primary/20 text-text-primary font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary:hover {
+    background-color: #2A629C;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-text-primary font-bold text-sm transition-all duration-300;
+  }
+  .btn-gold:hover {
+    background-color: #2A629C;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-transparent border border-secondary text-text-primary font-bold text-sm transition-all duration-300;
+  }
+  .btn-outline:hover {
+    background-color: #2A629C;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-text-muted text-sm font-medium transition-colors;
+  }
+  .btn-ghost:hover {
+    color: #F5F3F5;
+    background-color: rgba(52, 60, 78, 0.4);
+  }
+
+  /* Form Elements */
+  .input-field {
+    @apply w-full px-4 py-3 bg-surface border border-text-primary/20 text-text-primary placeholder:text-text-muted text-sm transition-all duration-200 focus:outline-none disabled:opacity-50;
+  }
+  .input-field:focus {
+    border-color: #2A629C;
+  }
+
+  /* Badge System */
+  .badge-jade {
+    @apply inline-flex items-center px-3 py-1 text-xs font-semibold bg-secondary text-text-primary border border-text-primary/20;
+  }
+
+  .badge-gold {
+    @apply inline-flex items-center px-3 py-1 text-xs font-semibold bg-primary text-text-primary border border-text-primary/20;
+  }
+
+  .badge-secondary {
+    @apply inline-flex items-center px-3 py-1 text-xs font-medium bg-surface border border-text-primary/20 text-text-muted;
+  }
+
+  /* Page Titles */
+  .page-title {
+    @apply font-display font-black text-3xl sm:text-4xl lg:text-5xl text-text-primary tracking-tight uppercase;
+  }
+
+  .section-heading {
+    @apply font-display font-black text-2xl sm:text-3xl text-text-primary tracking-tight uppercase;
+  }
+
+  .section-subheading {
+    @apply text-text-muted text-sm sm:text-base mt-2 max-w-2xl;
+  }
+
+  /* Stats Card */
+  .stats-card {
+    @apply bg-surface border border-text-primary/15 p-6 transition-all duration-300;
+  }
+  .stats-card:hover {
+    border-color: #2A629C;
+  }
+
+  /* Admin Nav Link */
+  .admin-nav-link {
+    @apply flex items-center gap-3 px-4 py-3 text-text-muted font-medium text-sm transition-all duration-200;
+  }
+  .admin-nav-link:hover {
+    color: #F5F3F5;
+    background-color: rgba(52, 60, 78, 0.3);
+  }
+  .admin-nav-link.active {
+    @apply bg-secondary border-l-4 border-text-primary text-text-primary font-bold;
+  }
+
+  /* Editorial Layout Utilities */
+  .writing-vertical {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+}
