@@ -1,11 +1,11 @@
-﻿import { useState, useRef } from "react";
+import { useState, useRef } from "react";
+import { Camera, User, Lock, Save, ShieldCheck, Mail, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { userService } from "../../services";
 import { getImageUrl } from "../../services/api";
 import Layout from "../../components/layout/Layout";
 import toast from "react-hot-toast";
 
-/* ── Inline Avatar Upload — circular, no box ── */
 function AvatarUpload({ user, onUploaded }) {
   const fileRef = useRef(null);
   const [preview, setPreview] = useState(null);
@@ -15,7 +15,7 @@ function AvatarUpload({ user, onUploaded }) {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("File terlalu besar. Maks 2 MB."); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("File size must be under 2MB."); return; }
     setSelectedFile(file);
     const reader = new FileReader();
     reader.onload = (ev) => setPreview(ev.target.result);
@@ -32,11 +32,11 @@ function AvatarUpload({ user, onUploaded }) {
       formData.append("phone", user?.phone || "");
       const { data } = await userService.updateProfile(formData);
       onUploaded(data.data);
-      toast.success("Foto profil berhasil diubah!");
+      toast.success("Profile photo updated!");
       setPreview(null);
       setSelectedFile(null);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Gagal upload foto.");
+      toast.error(err.response?.data?.message || "Failed to upload avatar.");
     } finally {
       setUploading(false);
     }
@@ -57,81 +57,47 @@ function AvatarUpload({ user, onUploaded }) {
     : "ME";
 
   return (
-    <div className="flex flex-col items-center gap-5">
-      {/* Big circle avatar — clickable */}
+    <div className="flex flex-col items-center gap-4">
       <div className="relative group cursor-pointer" onClick={() => fileRef.current?.click()}>
-        <div className="w-32 h-32 rounded-full overflow-hidden bg-[#2A629C] border-4 border-[#F5F3F5]/20 transition-all duration-300 group-hover:border-[#F5F3F5]/50 group-hover:scale-[1.03] shadow-lg">
+        <div className="w-28 h-28 rounded-full overflow-hidden bg-primary border-2 border-border transition-all duration-200 group-hover:border-accent shadow-card">
           {currentAvatar ? (
             <img src={currentAvatar} alt={user?.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <span className="font-display font-black text-4xl text-[#F5F3F5]">{initials}</span>
+              <span className="font-display font-bold text-3xl text-text-primary">{initials}</span>
             </div>
           )}
         </div>
 
-        {/* Camera icon overlay */}
-        <div className="absolute inset-0 rounded-full bg-[#343C4E]/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <svg className="w-7 h-7 text-[#F5F3F5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="text-[9px] font-mono text-[#F5F3F5] uppercase tracking-widest">edit</span>
+        <div className="absolute inset-0 rounded-full bg-background/60 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <Camera className="w-6 h-6 text-text-primary" />
+          <span className="text-[9px] font-mono text-text-primary uppercase tracking-wider">Edit</span>
         </div>
-
-        {/* Live preview badge */}
-        {preview && (
-          <span className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#2A629C] border-2 border-[#728EB7] flex items-center justify-center shadow">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#F5F3F5] block" />
-          </span>
-        )}
       </div>
 
       <input ref={fileRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
 
-      {preview ? (
-        <div className="flex items-center gap-3">
-          <button onClick={handleUpload} disabled={uploading} type="button"
-            className="bg-[#2A629C] hover:bg-[#1E4F82] text-[#F5F3F5] font-mono text-[11px] font-bold uppercase tracking-widest px-5 py-2 transition-colors disabled:opacity-50 rounded-full">
-            {uploading ? "Mengupload..." : "Simpan Foto"}
+      {preview && (
+        <div className="flex items-center gap-2">
+          <button onClick={handleUpload} disabled={uploading} type="button" className="btn-primary text-xs py-1.5 px-4">
+            {uploading ? "Saving..." : "Save Photo"}
           </button>
-          <button onClick={handleCancel} disabled={uploading} type="button"
-            className="text-[#D3CCD0] hover:text-[#F5F3F5] font-mono text-[11px] font-bold uppercase tracking-widest px-5 py-2 transition-colors disabled:opacity-50 rounded-full border border-[#F5F3F5]/15 hover:border-[#F5F3F5]/40">
-            Batal
+          <button onClick={handleCancel} disabled={uploading} type="button" className="btn-ghost text-xs py-1.5 px-4">
+            Cancel
           </button>
         </div>
-      ) : (
-        <p className="text-[10px] font-mono text-[#D3CCD0]/50 text-center leading-relaxed">
-          klik untuk ganti foto
-          <br />jpg · png · webp · maks 2 mb
-        </p>
       )}
     </div>
   );
 }
 
-/* ── Styled field ── */
-function Field({ label, children }) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-[10px] font-mono font-bold text-[#D3CCD0]/60 uppercase tracking-[0.2em]">{label}</label>
-      {children}
-    </div>
-  );
-}
-
-const inputCls = "w-full bg-transparent border-b border-[#F5F3F5]/15 text-[#F5F3F5] placeholder:text-[#D3CCD0]/30 px-0 py-2.5 text-sm font-sans focus:outline-none focus:border-[#8DA7CC] transition-colors";
-const disabledCls = "w-full bg-transparent border-b border-[#F5F3F5]/08 text-[#D3CCD0]/30 px-0 py-2.5 text-sm font-sans cursor-not-allowed";
-
-/* ══ Main ══ */
 export default function Profile() {
   const { user, updateUser } = useAuth();
   const [profileForm, setProfileForm] = useState({ name: user?.name || "", phone: user?.phone || "" });
   const [passwordForm, setPasswordForm] = useState({ current_password: "", new_password: "", confirm_password: "" });
   const [profileLoading, setProfileLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("info"); // "info" | "security"
+  const [activeTab, setActiveTab] = useState("info");
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -142,9 +108,9 @@ export default function Profile() {
       formData.append("phone", profileForm.phone);
       const { data } = await userService.updateProfile(formData);
       updateUser(data.data);
-      toast.success("Profil berhasil disimpan!");
+      toast.success("Profile saved!");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan profil.");
+      toast.error(err.response?.data?.message || "Failed to save profile.");
     } finally {
       setProfileLoading(false);
     }
@@ -152,14 +118,14 @@ export default function Profile() {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (passwordForm.new_password !== passwordForm.confirm_password) return toast.error("Password baru tidak cocok.");
+    if (passwordForm.new_password !== passwordForm.confirm_password) return toast.error("New passwords do not match.");
     setPasswordLoading(true);
     try {
       await userService.changePassword({ current_password: passwordForm.current_password, new_password: passwordForm.new_password });
-      toast.success("Password berhasil diubah!");
+      toast.success("Password changed successfully!");
       setPasswordForm({ current_password: "", new_password: "", confirm_password: "" });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Gagal mengubah password.");
+      toast.error(err.response?.data?.message || "Failed to change password.");
     } finally {
       setPasswordLoading(false);
     }
@@ -167,123 +133,116 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-[#728EB7] pt-24 pb-20">
-        <div className="max-w-3xl mx-auto px-6">
+      <div className="min-h-screen bg-background py-12">
+        <div className="container-premium max-w-2xl">
 
-          {/* ── Page label ── */}
-          <div className="mb-10">
-            <span className="text-[10px] font-mono text-[#343C4E] uppercase tracking-[0.25em]">account settings</span>
-            <h1 className="font-display font-black text-[#F5F3F5] uppercase tracking-tighter mt-1" style={{ fontSize: "clamp(2.2rem, 5vw, 3.5rem)", lineHeight: 1 }}>
+          {/* Page Title */}
+          <div className="mb-8">
+            <p className="text-xs font-mono uppercase tracking-widest text-muted mb-2">Account Settings</p>
+            <h1 className="font-display font-bold text-3xl sm:text-4xl text-text-primary">
               Member Profile
             </h1>
           </div>
 
-          {/* ── Avatar section — centered, airy ── */}
-          <div className="flex flex-col items-center text-center mb-14 gap-3">
-            <AvatarUpload user={user} onUploaded={updateUser} />
-            <div className="space-y-0.5 mt-1">
-              <h2 className="font-display font-bold text-[#F5F3F5] text-xl">{user?.name}</h2>
-              <p className="text-[11px] font-mono text-[#D3CCD0]/60">{user?.email}</p>
-              <span className="inline-block text-[9px] font-mono text-[#8DA7CC] uppercase tracking-widest border border-[#8DA7CC]/30 px-2 py-0.5 rounded-full mt-1">
-                {user?.role}
-              </span>
+          {/* Card Wrapper */}
+          <div className="bg-card border border-border rounded-card p-6 sm:p-8 shadow-card space-y-8">
+
+            {/* Avatar Header */}
+            <div className="flex flex-col items-center text-center space-y-3 pb-6 border-b border-border">
+              <AvatarUpload user={user} onUploaded={updateUser} />
+              <div>
+                <h2 className="font-display font-bold text-xl text-text-primary">{user?.name}</h2>
+                <p className="text-xs text-muted font-mono">{user?.email}</p>
+                <span className="badge-jade text-[10px] mt-2 inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3" /> {user?.role || 'Member'}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* ── Divider with member id ── */}
-          <div className="flex items-center gap-4 mb-10">
-            <div className="flex-1 h-px bg-[#F5F3F5]/10" />
-            <span className="text-[10px] font-mono text-[#D3CCD0]/40 uppercase tracking-widest">
-              member #{user?.id?.toString().padStart(6, "0") || "000000"}
-            </span>
-            <div className="flex-1 h-px bg-[#F5F3F5]/10" />
-          </div>
-
-          {/* ── Tab switcher — underline only, no boxes ── */}
-          <div className="flex items-center gap-8 border-b border-[#F5F3F5]/10 mb-8">
-            {[
-              { key: "info",     label: "Personal Info"    },
-              { key: "security", label: "Security"         },
-            ].map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`pb-3 text-[11px] font-mono font-bold uppercase tracking-widest transition-all relative ${
-                  activeTab === key ? "text-[#F5F3F5]" : "text-[#D3CCD0]/40 hover:text-[#D3CCD0]"
-                }`}
-              >
-                {label}
-                {activeTab === key && (
-                  <span className="absolute bottom-0 left-0 right-0 h-px bg-[#8DA7CC]" />
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Form panels ── */}
-          {activeTab === "info" && (
-            <form onSubmit={handleProfileSubmit} className="space-y-7">
-              <Field label="Full Name">
-                <input
-                  type="text"
-                  value={profileForm.name}
-                  onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
-                  className={inputCls}
-                />
-              </Field>
-              <Field label="Email Address">
-                <input type="email" value={user?.email || ""} disabled className={disabledCls} />
-                <p className="text-[10px] font-mono text-[#D3CCD0]/30 mt-1">email tidak dapat diubah</p>
-              </Field>
-              <Field label="Phone Number">
-                <input
-                  type="tel"
-                  value={profileForm.phone}
-                  onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
-                  placeholder="08xxxxxxxxxx"
-                  className={inputCls}
-                />
-              </Field>
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={profileLoading}
-                  className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#F5F3F5] bg-[#2A629C] hover:bg-[#1E4F82] px-8 py-3 transition-colors disabled:opacity-50 rounded-full"
-                >
-                  {profileLoading ? "Menyimpan..." : "Simpan Perubahan"}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {activeTab === "security" && (
-            <form onSubmit={handlePasswordSubmit} className="space-y-7">
+            {/* Navigation Tabs */}
+            <div className="flex gap-2 bg-bg-secondary border border-border rounded-md p-1">
               {[
-                { label: "Current Password",    key: "current_password"  },
-                { label: "New Password",         key: "new_password"      },
-                { label: "Confirm New Password", key: "confirm_password"  },
-              ].map(({ label, key }) => (
-                <Field key={key} label={label}>
-                  <input
-                    type="password"
-                    value={passwordForm[key]}
-                    onChange={e => setPasswordForm(p => ({ ...p, [key]: e.target.value }))}
-                    className={inputCls}
-                  />
-                </Field>
-              ))}
-              <div className="pt-2">
+                { key: "info",     label: "Personal Info", icon: User },
+                { key: "security", label: "Security",      icon: Lock },
+              ].map(({ key, label, icon: Icon }) => (
                 <button
-                  type="submit"
-                  disabled={passwordLoading}
-                  className="text-[11px] font-mono font-bold uppercase tracking-widest text-[#F5F3F5] border border-[#F5F3F5]/20 hover:border-[#F5F3F5]/50 px-8 py-3 transition-colors disabled:opacity-50 rounded-full"
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-medium rounded-md transition-all duration-200 cursor-pointer ${
+                    activeTab === key ? "bg-primary text-text-primary font-semibold shadow-sm" : "text-muted hover:text-text-primary"
+                  }`}
                 >
-                  {passwordLoading ? "Mengupdate..." : "Update Password"}
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{label}</span>
                 </button>
-              </div>
-            </form>
-          )}
+              ))}
+            </div>
 
+            {/* Profile Info Form */}
+            {activeTab === "info" && (
+              <form onSubmit={handleProfileSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted uppercase font-mono tracking-wider">Full Name</label>
+                  <input
+                    type="text"
+                    value={profileForm.name}
+                    onChange={e => setProfileForm(p => ({ ...p, name: e.target.value }))}
+                    className="input-premium"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted uppercase font-mono tracking-wider">Email Address</label>
+                  <input type="email" value={user?.email || ""} disabled className="input-premium opacity-50 cursor-not-allowed" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted uppercase font-mono tracking-wider">Phone Number</label>
+                  <input
+                    type="tel"
+                    value={profileForm.phone}
+                    onChange={e => setProfileForm(p => ({ ...p, phone: e.target.value }))}
+                    placeholder="08xxxxxxxxxx"
+                    className="input-premium"
+                  />
+                </div>
+
+                <div className="pt-4">
+                  <button type="submit" disabled={profileLoading} className="btn-primary py-3 px-6 text-xs justify-center disabled:opacity-50">
+                    <Save className="w-4 h-4" /> {profileLoading ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Security Password Form */}
+            {activeTab === "security" && (
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                {[
+                  { label: "Current Password",    key: "current_password" },
+                  { label: "New Password",         key: "new_password" },
+                  { label: "Confirm New Password", key: "confirm_password" },
+                ].map(({ label, key }) => (
+                  <div key={key} className="space-y-1.5">
+                    <label className="text-xs font-semibold text-muted uppercase font-mono tracking-wider">{label}</label>
+                    <input
+                      type="password"
+                      value={passwordForm[key]}
+                      onChange={e => setPasswordForm(p => ({ ...p, [key]: e.target.value }))}
+                      className="input-premium"
+                    />
+                  </div>
+                ))}
+
+                <div className="pt-4">
+                  <button type="submit" disabled={passwordLoading} className="btn-primary py-3 px-6 text-xs justify-center disabled:opacity-50">
+                    <Lock className="w-4 h-4" /> {passwordLoading ? "Updating..." : "Update Password"}
+                  </button>
+                </div>
+              </form>
+            )}
+
+          </div>
         </div>
       </div>
     </Layout>

@@ -1,27 +1,10 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Check, X, FileText, Eye } from "lucide-react";
 import { adminService, getImageUrl } from "../../services";
-import Badge from "../../components/ui/Badge";
 import Modal from "../../components/ui/Modal";
-import { formatCurrency, getStatusColor, getStatusLabel } from "../../utils";
-
-const S = {
-  muted:   "rgba(141,167,204,0.5)",
-  dimmed:  "rgba(245,243,245,0.45)",
-  accent:  "#8DA7CC",
-  white:   "#F5F3F5",
-  border:  "1px solid rgba(245,243,245,0.06)",
-};
-
-function PageHeader({ label, title }) {
-  return (
-    <div className="mb-8">
-      <p className="text-[10px] font-mono uppercase tracking-[0.3em] mb-2" style={{ color: S.muted }}>{label}</p>
-      <h1 className="font-display font-black uppercase tracking-tight" style={{ fontSize: "clamp(1.6rem,4vw,2.4rem)", color: S.white, lineHeight: 1 }}>{title}</h1>
-    </div>
-  );
-}
+import { formatCurrency, getStatusLabel } from "../../utils";
 
 export default function ManageBookings() {
   const queryClient = useQueryClient();
@@ -55,50 +38,55 @@ export default function ManageBookings() {
 
   return (
     <div className="space-y-6 max-w-6xl">
-      <PageHeader label="Order Administration" title="Manage Orders & Payments" />
+      {/* Header */}
+      <div>
+        <p className="text-xs font-mono uppercase tracking-widest text-muted mb-1">Order Administration</p>
+        <h1 className="font-display font-bold text-3xl sm:text-4xl text-text-primary">
+          Manage Orders & Payments
+        </h1>
+      </div>
 
-      {/* Table */}
-      <div style={{ background: "var(--admin-surface)", border: "1px solid var(--admin-border)" }}>
+      {/* Orders Table */}
+      <div className="bg-card border border-border rounded-card p-6 shadow-card">
         {isLoading ? (
-          <p className="p-8 text-center text-xs font-mono uppercase tracking-widest" style={{ color: S.muted }}>Loading orders...</p>
+          <p className="py-12 text-center text-xs font-mono uppercase tracking-widest text-muted">Loading orders...</p>
         ) : bookings.length === 0 ? (
-          <p className="p-12 text-center text-xs font-mono" style={{ color: S.muted }}>No orders found.</p>
+          <p className="py-12 text-center text-xs font-mono text-muted">No orders found.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr style={{ borderBottom: "1px solid var(--admin-border)", background: "var(--admin-card)" }}>
-                  {["Booking Ref", "Customer", "Concert", "Amount", "Status", "Action"].map((h, i) => (
-                    <th key={h} className={`py-3.5 px-5 font-mono font-bold uppercase tracking-[0.15em] ${i === 5 ? "text-right" : ""}`} style={{ color: S.muted }}>{h}</th>
-                  ))}
+                <tr className="border-b border-border text-muted font-mono uppercase">
+                  <th className="pb-3 pt-2 font-semibold">Booking Ref</th>
+                  <th className="pb-3 pt-2 font-semibold">Customer</th>
+                  <th className="pb-3 pt-2 font-semibold">Concert</th>
+                  <th className="pb-3 pt-2 font-semibold">Amount</th>
+                  <th className="pb-3 pt-2 font-semibold">Status</th>
+                  <th className="pb-3 pt-2 font-semibold text-right">Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border">
                 {bookings.map((b) => (
-                  <tr
-                    key={b.id}
-                    style={{ borderBottom: "1px solid rgba(245,243,245,0.04)" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(42,98,156,0.06)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                  >
-                    <td className="py-4 px-5 font-mono font-bold" style={{ color: S.accent }}>{b.booking_code}</td>
-                    <td className="py-4 px-5">
-                      <p className="font-semibold" style={{ color: S.white }}>{b.user?.name}</p>
-                      <p className="text-[11px] mt-0.5" style={{ color: S.muted }}>{b.user?.email}</p>
+                  <tr key={b.id} className="hover:bg-surface/50 transition-colors">
+                    <td className="py-3 font-mono font-bold text-accent">#{b.booking_code}</td>
+                    <td className="py-3">
+                      <p className="font-semibold text-text-primary">{b.user?.name}</p>
+                      <p className="text-[11px] text-muted">{b.user?.email}</p>
                     </td>
-                    <td className="py-4 px-5 max-w-[180px] truncate" style={{ color: S.dimmed }}>{b.concert?.title}</td>
-                    <td className="py-4 px-5 font-bold font-mono" style={{ color: S.white }}>{formatCurrency(b.total_price)}</td>
-                    <td className="py-4 px-5"><Badge variant={getStatusColor(b.status)}>{getStatusLabel(b.status)}</Badge></td>
-                    <td className="py-4 px-5 text-right">
+                    <td className="py-3 text-text-secondary max-w-[180px] truncate">{b.concert?.title}</td>
+                    <td className="py-3 font-mono font-semibold text-text-primary">{formatCurrency(b.total_price)}</td>
+                    <td className="py-3">
+                      <span className={b.status === "confirmed" ? "badge-jade" : "badge-gold"}>
+                        {getStatusLabel(b.status)}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right">
                       {b.payment?.proof_image && (
                         <button
                           onClick={() => setSelectedPayment(b)}
-                          className="text-[10px] font-mono font-bold uppercase tracking-widest px-4 py-2 transition-colors"
-                          style={{ border: "1px solid rgba(141,167,204,0.3)", color: S.accent }}
-                          onMouseEnter={e => { e.target.style.borderColor = "#8DA7CC"; e.target.style.color = S.white; }}
-                          onMouseLeave={e => { e.target.style.borderColor = "rgba(141,167,204,0.3)"; e.target.style.color = S.accent; }}
+                          className="btn-ghost text-xs py-1.5 px-3"
                         >
-                          Review Receipt
+                          <Eye className="w-3.5 h-3.5" /> Review Receipt
                         </button>
                       )}
                     </td>
@@ -110,27 +98,26 @@ export default function ManageBookings() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Review Receipt Modal */}
       <Modal isOpen={!!selectedPayment} onClose={() => setSelectedPayment(null)} title="Review Payment Receipt">
         {selectedPayment && (
-          <div className="space-y-5">
-            <div className="text-xs space-y-1 pb-4" style={{ borderBottom: "1px solid rgba(245,243,245,0.06)" }}>
-              <p style={{ color: S.muted }}>Booking Ref: <span className="font-mono font-bold" style={{ color: S.accent }}>{selectedPayment.booking_code}</span></p>
-              <p style={{ color: S.muted }}>Amount: <span className="font-bold" style={{ color: S.white }}>{formatCurrency(selectedPayment.total_price)}</span></p>
+          <div className="space-y-4 pt-2">
+            <div className="text-xs space-y-1 pb-3 border-b border-border">
+              <p className="text-muted font-mono">Booking Ref: <span className="font-bold text-accent">#{selectedPayment.booking_code}</span></p>
+              <p className="text-muted font-mono">Total Amount: <span className="font-bold text-text-primary">{formatCurrency(selectedPayment.total_price)}</span></p>
             </div>
             {selectedPayment.payment?.proof_image && (
-              <div className="flex justify-center p-4" style={{ background: "var(--admin-bg)", border: "1px solid var(--admin-border)" }}>
-                <img src={getImageUrl(selectedPayment.payment.proof_image, "payments")} alt="Payment Proof" className="max-h-80 object-contain" />
+              <div className="flex justify-center p-3 bg-surface rounded-md border border-border">
+                <img src={getImageUrl(selectedPayment.payment.proof_image, "payments")} alt="Payment Proof" className="max-h-72 object-contain rounded-md" />
               </div>
             )}
-            <div className="flex gap-3 pt-3" style={{ borderTop: "1px solid rgba(245,243,245,0.06)" }}>
+            <div className="flex gap-3 pt-3 border-t border-border">
               <button
                 onClick={() => approveMutation.mutate(selectedPayment.payment.id)}
                 disabled={approveMutation.isLoading}
-                className="flex-1 py-3 text-xs font-mono font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
-                style={{ background: "#2A629C", color: "#F5F3F5" }}
+                className="btn-primary flex-1 text-xs justify-center py-2.5 disabled:opacity-50"
               >
-                Approve Payment
+                <Check className="w-4 h-4" /> Approve Payment
               </button>
               <button
                 onClick={() => {
@@ -138,12 +125,9 @@ export default function ManageBookings() {
                   if (reason) rejectMutation.mutate({ paymentId: selectedPayment.payment.id, reason });
                 }}
                 disabled={rejectMutation.isLoading}
-                className="flex-1 py-3 text-xs font-mono font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
-                style={{ border: "1px solid rgba(214,90,90,0.4)", color: "#D65A5A" }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(214,90,90,0.08)"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                className="btn-ghost text-xs flex-1 text-danger border-danger/30 hover:bg-danger/10 justify-center py-2.5 disabled:opacity-50"
               >
-                Reject Receipt
+                <X className="w-4 h-4" /> Reject Receipt
               </button>
             </div>
           </div>

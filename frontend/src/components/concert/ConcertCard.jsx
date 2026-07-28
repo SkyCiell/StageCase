@@ -1,80 +1,108 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Calendar, MapPin, Ticket, Star, ArrowRight } from 'lucide-react';
 import { getImageUrl } from '../../services/api';
-import { formatDateShort, formatCurrency } from '../../utils';
+import { formatCurrency, formatDateShort } from '../../utils';
 import userImg0 from '../../assets/images/images.jpg';
+
+const BAND_COLORS = {
+  'Crayon Case':  { primary: '#2D6F73', accent: '#D6B46B' },
+  'Reality Club': { primary: '#5D4E89', accent: '#D8C5A2' },
+  'The Milo':     { primary: '#6E8B6B', accent: '#C9A46A' },
+  'Wave to Earth':{ primary: '#4F6D8C', accent: '#BFCFD7' },
+};
 
 const ConcertCard = ({ concert, index = 0 }) => {
   const minPrice = concert.ticketCategories?.length
     ? Math.min(...concert.ticketCategories.map(c => parseFloat(c.price)))
-    : null;
+    : 350000;
 
   const posterSrc = concert.poster ? getImageUrl(concert.poster, 'posters') : userImg0;
+  const bandColor = BAND_COLORS[concert.artist_name] || { primary: '#2D6F73', accent: '#B89B5E' };
+
+  const concertDate = new Date(concert.date);
+  const day   = concertDate.getDate();
+  const month = concertDate.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.06, duration: 0.4 }}
+      transition={{ delay: index * 0.06, duration: 0.3 }}
+      className="h-full"
     >
       <Link to={`/concerts/${concert.slug}`} className="block h-full group">
-        {/* Ticket Stub Style Card */}
-        <div className="relative bg-[#8DA7CC] border-2 border-[#343C4E] shadow-2xl h-full flex flex-col justify-between overflow-hidden transition-all duration-300 group-hover:border-[#2A629C] group-hover:-translate-y-1 text-[#343C4E]">
-          
-          {/* Side Semi-Circle Notches for Ticket Stub Shape */}
-          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#728EB7] border-r-2 border-[#343C4E] z-20 pointer-events-none" />
-          <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#728EB7] border-l-2 border-[#343C4E] z-20 pointer-events-none" />
+        <div className="h-full bg-card border border-border rounded-card shadow-card transition-all duration-250 group-hover:-translate-y-1 group-hover:border-gold group-hover:shadow-card-hover overflow-hidden flex flex-col">
 
-          {/* Top Ticket Header Banner */}
-          <div className="bg-[#343C4E] text-[#F5F3F5] px-4 py-2 font-mono text-[10px] uppercase font-bold tracking-widest flex items-center justify-between border-b border-[#F5F3F5]/20">
-            <span>STAGECASE PASS #{1000 + (index * 137)}</span>
-            <span className="bg-[#2A629C] px-2 py-0.5 text-[9px]">CRAYON CASE</span>
-          </div>
-
-          {/* Poster Image Area */}
-          <div className="relative aspect-video overflow-hidden bg-[#343C4E]">
+          {/* Concert Poster Image */}
+          <div className="relative aspect-[16/9] overflow-hidden bg-surface flex-shrink-0">
             <img
               src={posterSrc}
               alt={concert.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-95"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute top-2 left-2 bg-[#2A629C] text-[#F5F3F5] font-mono text-[9px] font-bold uppercase tracking-widest px-2.5 py-0.5 border border-[#F5F3F5]/20">
-              {formatDateShort(concert.date)}
+            {/* Date badge overlay */}
+            <div
+              className="absolute top-3 left-3 flex flex-col items-center justify-center w-12 h-12 rounded-md shadow-lg text-white"
+              style={{ backgroundColor: bandColor.primary }}
+            >
+              <span className="text-base font-black font-display leading-none">{day}</span>
+              <span className="text-[9px] font-mono font-bold tracking-wider">{month}</span>
             </div>
+
+            {/* Featured badge */}
+            {concert.is_featured && (
+              <div className="absolute top-3 right-3 flex items-center gap-1 bg-accent text-[#0D1117] px-2 py-0.5 rounded-full text-[10px] font-bold">
+                <Star className="w-2.5 h-2.5" fill="currentColor" /> Featured
+              </div>
+            )}
+
+            {/* Status bar */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-1"
+              style={{ backgroundColor: bandColor.primary }}
+            />
           </div>
 
-          {/* Card Body */}
-          <div className="p-5 flex-1 flex flex-col justify-between space-y-4 relative">
-            <div>
-              <p className="text-[10px] font-mono font-bold text-[#2A629C] uppercase tracking-widest mb-1">
-                ADMIT ONE • LIVE CONCERT
-              </p>
-              <h3 className="font-display font-black text-lg text-[#343C4E] group-hover:text-[#2A629C] transition-colors line-clamp-2 uppercase">
-                {concert.title}
-              </h3>
-              {concert.venue && (
-                <p className="text-xs font-sans text-[#343C4E]/80 mt-1 flex items-center gap-1">
-                  <span>📍</span> {concert.venue.name}, {concert.venue.city}
-                </p>
-              )}
-            </div>
+          {/* Concert Info */}
+          <div className="p-5 flex flex-col flex-1 gap-3">
 
-            {/* Dotted Perforated Tear Line */}
-            <div className="border-t-2 border-dashed border-[#343C4E]/30 pt-3 flex items-center justify-between">
+            {/* Artist badge */}
+            <span
+              className="text-[10px] font-bold font-mono uppercase tracking-wider"
+              style={{ color: bandColor.accent }}
+            >
+              {concert.artist_name || 'LIVE CONCERT'}
+            </span>
+
+            {/* Title */}
+            <h3 className="font-display font-bold text-base text-text-primary group-hover:text-accent transition-colors leading-snug line-clamp-2 -mt-1">
+              {concert.title}
+            </h3>
+
+            {/* Venue */}
+            {concert.venue && (
+              <div className="flex items-center gap-1.5 text-xs text-muted">
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{concert.venue.name}, {concert.venue.city}</span>
+              </div>
+            )}
+
+            {/* Price & CTA */}
+            <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
               <div>
-                <p className="text-[9px] font-mono text-[#343C4E]/60 uppercase font-bold">Starts From</p>
-                <p className="font-mono font-black text-[#343C4E] text-base">
-                  {minPrice ? formatCurrency(minPrice) : 'Rp 350.000'}
-                </p>
+                <p className="text-[10px] text-muted font-mono uppercase">From</p>
+                <p className="text-sm font-bold text-text-primary">{formatCurrency(minPrice)}</p>
               </div>
-
-              <div className="bg-[#343C4E] text-[#F5F3F5] group-hover:bg-[#2A629C] font-mono text-[11px] font-bold uppercase tracking-wider px-3.5 py-2 transition-colors border border-[#F5F3F5]/20">
-                Book Pass →
-              </div>
+              <span
+                className="flex items-center gap-1.5 text-xs font-semibold group-hover:gap-2.5 transition-all"
+                style={{ color: bandColor.accent }}
+              >
+                Book <ArrowRight className="w-3.5 h-3.5" />
+              </span>
             </div>
           </div>
-
         </div>
       </Link>
     </motion.div>

@@ -1,6 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { Armchair, Check, Ticket, MapPin, ArrowRight } from 'lucide-react';
 import { concertService } from '../../services';
 import { useBooking } from '../../context/BookingContext';
 import Layout from '../../components/layout/Layout';
@@ -22,12 +23,12 @@ export default function SeatSelection() {
   if (!selectedConcert || !selectedCategories.length) {
     return (
       <Layout>
-        <div className="min-h-[70vh] flex flex-col items-center justify-center container-premium text-center">
-          <div className="card-flat p-10 max-w-md w-full">
-            <p className="text-4xl mb-3 opacity-30">🎟</p>
-            <h2 className="font-display font-bold text-2xl text-ivory mb-2">No Active Booking Session</h2>
+        <div className="min-h-[70vh] flex items-center justify-center container-premium text-center">
+          <div className="bg-card border border-border rounded-card p-10 max-w-md w-full shadow-card">
+            <Ticket className="w-12 h-12 text-muted mx-auto mb-4" />
+            <h2 className="font-display font-bold text-2xl text-text-primary mb-2">No Active Booking Session</h2>
             <p className="text-text-secondary text-xs mb-6">Please select a concert and ticket tier first.</p>
-            <Link to="/concerts" className="btn-primary text-xs w-full text-center">
+            <Link to="/concerts" className="btn-primary text-xs w-full justify-center">
               Explore Concerts
             </Link>
           </div>
@@ -64,15 +65,15 @@ export default function SeatSelection() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-background pt-28 pb-20">
+      <div className="min-h-screen bg-background py-12">
         <div className="container-premium">
 
-          {/* ── Page Header ── */}
-          <div className="mb-10 border-b border-white/[0.06] pb-8">
+          {/* ── Page Header & Stepper ── */}
+          <div className="mb-10 border-b border-border pb-8">
             <span className="badge-jade text-[10px] uppercase tracking-wider mb-2">Step 1 of 3</span>
-            <h1 className="page-title mt-1">Interactive Seat Selection</h1>
-            <p className="section-subheading">
-              Pick your preferred seats for <span className="text-ivory font-bold">{selectedConcert.title}</span>.
+            <h1 className="font-display font-bold text-3xl sm:text-4xl text-text-primary mt-1">Interactive Seat Selection</h1>
+            <p className="text-text-secondary text-sm mt-1">
+              Pick your preferred seats for <strong className="text-text-primary font-semibold">{selectedConcert.title}</strong>.
             </p>
           </div>
 
@@ -80,11 +81,11 @@ export default function SeatSelection() {
 
             {/* ── Seat Map Container (7 cols) ── */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="card-premium p-6 sm:p-10 flex flex-col items-center">
+              <div className="bg-card border border-border rounded-card p-6 sm:p-8 shadow-card flex flex-col items-center">
 
                 {/* Stage Banner */}
-                <div className="w-full py-3 bg-bg-secondary border border-jade/40 rounded-xl text-center mb-8 shadow-sm">
-                  <span className="font-display font-bold text-xs uppercase tracking-widest text-jade-light">
+                <div className="w-full py-3 bg-surface border border-border rounded-md text-center mb-8 shadow-sm">
+                  <span className="font-display font-bold text-xs uppercase tracking-widest text-primary">
                     STAGE / PERFORMANCE AREA
                   </span>
                 </div>
@@ -92,27 +93,29 @@ export default function SeatSelection() {
                 {/* Legend */}
                 <div className="flex flex-wrap justify-center gap-6 mb-8 text-xs text-text-secondary">
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md border border-white/20 bg-surface" />
+                    <div className="w-4 h-4 rounded-md border border-border bg-surface" />
                     <span>Available</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-jade text-white flex items-center justify-center font-bold text-[10px]">✓</div>
+                    <div className="w-4 h-4 rounded-md bg-primary text-text-primary flex items-center justify-center font-bold text-[10px]">
+                      <Check className="w-3 h-3" />
+                    </div>
                     <span>Selected</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-surface-light border border-white/[0.05] opacity-40" />
+                    <div className="w-4 h-4 rounded-md bg-surface border border-border opacity-40" />
                     <span>Booked</span>
                   </div>
                 </div>
 
                 {/* Seat Matrix */}
                 {isLoading ? (
-                  <div className="py-16 text-center text-xs text-text-muted">Loading seat layout...</div>
+                  <div className="py-16 text-center text-xs text-muted">Loading seat layout...</div>
                 ) : Object.keys(rowsMap).length > 0 ? (
                   <div className="space-y-3 overflow-x-auto max-w-full pb-4">
                     {Object.entries(rowsMap).map(([rowLabel, rowSeats]) => (
                       <div key={rowLabel} className="flex items-center gap-3">
-                        <span className="w-6 text-xs font-bold text-text-muted text-center font-mono">{rowLabel}</span>
+                        <span className="w-6 text-xs font-bold text-muted text-center font-mono">{rowLabel}</span>
                         <div className="flex gap-2">
                           {rowSeats.map(seat => {
                             const isSelected = selectedSeats.some(s => s.id === seat.id);
@@ -122,12 +125,12 @@ export default function SeatSelection() {
                                 key={seat.id}
                                 onClick={() => handleSeatClick(seat)}
                                 disabled={!isAvailable}
-                                className={`w-9 h-9 rounded-lg text-xs font-mono font-medium transition-all duration-200 border ${
+                                className={`w-9 h-9 rounded-md text-xs font-mono font-medium transition-all duration-200 border cursor-pointer ${
                                   isSelected
-                                    ? 'bg-jade border-jade text-white font-bold shadow-jade-glow'
+                                    ? 'bg-primary border-primary text-text-primary font-bold shadow-sm'
                                     : isAvailable
-                                    ? 'bg-surface border-white/[0.1] text-ivory hover:border-jade-light hover:bg-jade/10'
-                                    : 'bg-surface-light border-white/[0.04] text-text-muted opacity-40 cursor-not-allowed'
+                                    ? 'bg-surface border-border text-text-primary hover:border-primary hover:bg-primary/10'
+                                    : 'bg-surface border-border text-muted opacity-40 cursor-not-allowed'
                                 }`}
                                 title={`${seat.label || seat.row + seat.number} (${seat.category?.name || 'Standard'})`}
                               >
@@ -140,9 +143,9 @@ export default function SeatSelection() {
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12 text-center card-flat w-full">
-                    <span className="text-3xl mb-2 block">🎟</span>
-                    <p className="text-ivory font-bold text-sm">General Admission / Free Seating</p>
+                  <div className="py-12 text-center bg-surface border border-border rounded-md w-full p-6">
+                    <Armchair className="w-8 h-8 text-muted mx-auto mb-2" />
+                    <p className="text-text-primary font-bold text-sm">General Admission / Free Seating</p>
                     <p className="text-xs text-text-secondary mt-1">This tier does not require individual seat reservation.</p>
                   </div>
                 )}
@@ -151,26 +154,28 @@ export default function SeatSelection() {
 
             {/* ── Summary Sidebar (5 cols) ── */}
             <div className="lg:col-span-5">
-              <div className="card-premium p-6 sm:p-8 sticky top-28 space-y-6">
+              <div className="bg-card border border-border rounded-card p-6 sm:p-7 sticky top-28 space-y-6 shadow-card">
 
-                <div className="pb-4 border-b border-white/[0.08]">
+                <div className="pb-4 border-b border-border">
                   <span className="badge-jade text-[9px] uppercase tracking-wider mb-1">Booking Overview</span>
-                  <h3 className="font-display font-bold text-xl text-ivory">{selectedConcert.title}</h3>
+                  <h3 className="font-display font-bold text-lg text-text-primary">{selectedConcert.title}</h3>
                   {selectedConcert.venue && (
-                    <p className="text-xs text-text-secondary mt-1">📍 {selectedConcert.venue.name}, {selectedConcert.venue.city}</p>
+                    <p className="text-xs text-text-secondary mt-1 flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-muted" /> {selectedConcert.venue.name}, {selectedConcert.venue.city}
+                    </p>
                   )}
                 </div>
 
                 {/* Items */}
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Selected Tiers</p>
+                  <p className="text-xs font-semibold text-muted uppercase tracking-wider">Selected Tiers</p>
                   {selectedCategories.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-start text-xs border-b border-white/[0.06] pb-3">
+                    <div key={idx} className="flex justify-between items-start text-xs border-b border-border pb-3">
                       <div>
-                        <p className="font-bold text-ivory">{item.category.name} × {item.quantity}</p>
+                        <p className="font-semibold text-text-primary">{item.category.name} × {item.quantity}</p>
                         <p className="text-text-secondary mt-0.5">{formatCurrency(item.category.price)} each</p>
                       </div>
-                      <p className="font-bold text-gold">{formatCurrency(parseFloat(item.category.price) * item.quantity)}</p>
+                      <p className="font-bold text-accent">{formatCurrency(parseFloat(item.category.price) * item.quantity)}</p>
                     </div>
                   ))}
                 </div>
@@ -178,7 +183,7 @@ export default function SeatSelection() {
                 {/* Selected seats badges */}
                 {selectedSeats.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">Reserved Seats</p>
+                    <p className="text-xs font-semibold text-muted uppercase tracking-wider">Reserved Seats</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedSeats.map(s => (
                         <span key={s.id} className="badge-jade text-xs font-mono font-bold">
@@ -190,13 +195,13 @@ export default function SeatSelection() {
                 )}
 
                 {/* Total */}
-                <div className="py-4 border-t border-b border-white/[0.08] flex items-center justify-between">
-                  <span className="text-xs text-text-muted uppercase font-semibold">Total Price</span>
-                  <span className="font-display font-bold text-gold text-2xl">{formatCurrency(totalAmount)}</span>
+                <div className="py-4 border-t border-b border-border flex items-center justify-between">
+                  <span className="text-xs text-muted uppercase font-mono tracking-wider">Total Amount</span>
+                  <span className="font-display font-black text-accent text-2xl">{formatCurrency(totalAmount)}</span>
                 </div>
 
-                <button onClick={handleProceed} className="btn-primary w-full py-4 text-sm">
-                  Proceed to Checkout
+                <button onClick={handleProceed} className="btn-primary w-full py-3.5 text-sm justify-center">
+                  Proceed to Checkout <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>

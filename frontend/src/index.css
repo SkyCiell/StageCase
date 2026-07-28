@@ -1,138 +1,132 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Admin panel CSS variables (raw hex, no @apply dependency) ── */
-:root {
-  --admin-bg:      #0E1219;
-  --admin-sidebar: #131923;
-  --admin-surface: #1A2232;
-  --admin-card:    #202A3D;
-  --admin-border:  rgba(245,243,245,0.06);
-  --admin-muted:   #8DA7CC;
-  --admin-accent:  #2A629C;
-}
+/* ═══════════════════════════════════════════════════════════
+   StageCase Premium Design System
+   Visual Style: Clean Dark, 8px Grid, 250ms Max Transitions
+   Base Colors: #0D1117 (BG), #161B22 (Secondary), #1C2128 (Card), #22272E (Surface)
+   Accents: #2D6F73 (Jade), #B89B5E (Gold)
+   ═══════════════════════════════════════════════════════════ */
 
 @layer base {
+  * {
+    border-color: #30363D;
+  }
+  
   html {
     scroll-behavior: smooth;
     color-scheme: dark;
+    text-rendering: optimizeLegibility;
+  }
+  
+  body {
+    background-color: #0D1117;
+    color: #F3F4F6;
+    font-family: 'Inter', 'Poppins', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    @apply bg-background text-text-primary font-sans antialiased min-h-screen overflow-x-hidden;
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #F3F4F6;
   }
 
   ::selection {
-    background-color: #2A629C;
-    color: #F5F3F5;
+    background-color: rgba(45, 111, 115, 0.4);
+    color: #F3F4F6;
   }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(42,98,156,0.4); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #2A629C; }
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px; 
+  }
+  ::-webkit-scrollbar-track { 
+    background: #0D1117; 
+  }
+  ::-webkit-scrollbar-thumb { 
+    background: #30363D;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover { 
+    background: #2D6F73; 
+  }
 }
 
 @layer components {
-  /* ── Container ── */
+  /* Layout Container */
   .container-premium {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* ── Public site cards ── */
-  .ticket-card {
-    @apply relative bg-surface text-text-primary border border-text-primary/20 shadow-xl transition-all duration-300;
-  }
-  .ticket-card:hover { border-color: #2A629C; transform: translateY(-2px); }
-
+  /* Premium Card Component */
   .card-premium {
-    @apply bg-surface text-text-primary border border-text-primary/20 shadow-lg transition-all duration-300;
+    @apply bg-card border border-border rounded-card p-6 shadow-card transition-all duration-250 ease-out hover:-translate-y-1 hover:border-gold hover:shadow-card-hover relative overflow-hidden;
   }
-  .card-premium:hover { border-color: #2A629C; }
 
-  /* ── Admin panel cards (raw CSS — no @apply on custom tokens) ── */
   .card-flat {
-    background-color: var(--admin-surface);
-    border: 1px solid var(--admin-border);
-    padding: 1.5rem;
-    transition: border-color 0.2s;
-  }
-  .card-flat:hover { border-color: rgba(42, 98, 156, 0.35); }
-
-  .stats-card {
-    background-color: var(--admin-card);
-    border: 1px solid var(--admin-border);
-    padding: 1.5rem;
-    transition: border-color 0.2s;
-  }
-  .stats-card:hover { border-color: #2A629C; }
-
-  /* ── Admin Nav Link ── */
-  .admin-nav-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 0.875rem;
-    color: rgba(141, 167, 204, 0.55);
-    font-weight: 500;
-    font-size: 0.8125rem;
-    transition: all 0.18s;
-    border-radius: 8px;
-    letter-spacing: 0.01em;
-  }
-  .admin-nav-link:hover {
-    color: #F5F3F5;
-    background-color: rgba(42, 98, 156, 0.12);
-  }
-  .admin-nav-link.active {
-    color: #F5F3F5;
-    background-color: rgba(42, 98, 156, 0.2);
-    border-left: 2px solid #2A629C;
-    padding-left: calc(0.875rem - 2px);
-    font-weight: 600;
+    @apply bg-card border border-border rounded-card p-6 shadow-card;
   }
 
-  /* ── Buttons ── */
+  .surface-card {
+    @apply bg-surface border border-border rounded-md p-4;
+  }
+
+  /* Buttons */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-secondary text-text-primary font-bold text-sm transition-all duration-300 border border-text-primary/20 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-primary hover:bg-[#357E82] text-text-primary font-medium rounded-md px-5 py-2.5 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .btn-primary:hover { background-color: #343C4E; }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary border border-text-primary/20 text-text-primary font-bold text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-card hover:bg-surface border border-border text-text-primary font-medium rounded-md px-5 py-2.5 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .btn-secondary:hover { background-color: #2A629C; }
-
-  .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-transparent border border-secondary text-text-primary font-bold text-sm transition-all duration-300;
-  }
-  .btn-outline:hover { background-color: #2A629C; }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-text-muted text-sm font-medium transition-colors;
+    @apply bg-transparent hover:bg-surface border border-border text-text-primary font-medium rounded-md px-5 py-2.5 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  .btn-ghost:hover { color: #F5F3F5; background-color: rgba(52, 60, 78, 0.4); }
 
-  /* ── Form ── */
-  .input-field {
-    @apply w-full px-4 py-3 bg-surface border border-text-primary/20 text-text-primary placeholder:text-text-muted text-sm transition-all duration-200 focus:outline-none disabled:opacity-50;
+  .btn-accent {
+    @apply bg-accent hover:bg-[#C6A96C] text-[#0D1117] font-semibold rounded-md px-5 py-2.5 transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer;
   }
-  .input-field:focus { border-color: #2A629C; }
 
-  /* ── Badges ── */
-  .badge-jade    { @apply inline-flex items-center px-3 py-1 text-xs font-semibold bg-secondary text-text-primary border border-text-primary/20; }
-  .badge-gold    { @apply inline-flex items-center px-3 py-1 text-xs font-semibold bg-primary text-text-primary border border-text-primary/20; }
-  .badge-secondary { @apply inline-flex items-center px-3 py-1 text-xs font-medium bg-surface border border-text-primary/20 text-text-muted; }
+  /* Input fields */
+  .input-premium {
+    @apply bg-surface border border-border text-text-primary placeholder:text-muted rounded-md px-4 py-2.5 focus:outline-none focus:border-primary transition-all duration-200 w-full font-sans text-sm;
+  }
 
-  /* ── Typography ── */
-  .page-title       { @apply font-display font-black text-3xl sm:text-4xl lg:text-5xl text-text-primary tracking-tight uppercase; }
-  .section-heading  { @apply font-display font-black text-2xl sm:text-3xl text-text-primary tracking-tight uppercase; }
-  .section-subheading { @apply text-text-muted text-sm sm:text-base mt-2 max-w-2xl; }
+  /* Modal */
+  .modal-premium {
+    @apply bg-card border border-border rounded-modal shadow-modal p-6 sm:p-8 max-w-lg w-full relative z-50;
+  }
 
-  /* ── Misc ── */
-  .writing-vertical { writing-mode: vertical-rl; transform: rotate(180deg); }
-  .navbar-floating  { @apply bg-primary text-text-primary border border-text-primary/20 shadow-2xl; }
+  /* Badges */
+  .badge-jade {
+    @apply bg-primary/20 text-primary border border-primary/30 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5;
+  }
+
+  .badge-gold {
+    @apply bg-accent/20 text-accent border border-accent/30 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5;
+  }
+
+  .badge-status {
+    @apply rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5;
+  }
+
+  /* Ticket Component Specifics */
+  .ticket-stub {
+    @apply bg-card border border-border rounded-card p-6 shadow-card relative overflow-hidden border-l-4 border-l-gold;
+  }
+
+  /* Header Sticky Navbar */
+  .navbar-sticky {
+    @apply sticky top-0 z-40 bg-bg-secondary border-b border-border h-[72px] transition-all duration-200;
+  }
 }

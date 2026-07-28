@@ -9,7 +9,7 @@ const generateToken = (id, role) =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
 // POST /api/auth/register
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
     const existing = await User.findOne({ where: { email } });

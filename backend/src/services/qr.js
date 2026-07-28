@@ -7,9 +7,14 @@ const { v4: uuidv4 } = require('uuid');
 const generateQRCode = async (data) => {
   const qrData = typeof data === 'string' ? data : JSON.stringify(data);
   const qrBase64 = await QRCode.toDataURL(qrData, {
-    width: 300,
-    margin: 2,
-    color: { dark: '#151617', light: '#EEE9DF' },
+    width: 256,
+    margin: 1,
+    errorCorrectionLevel: 'L', // Low error correction = simpler QR code
+    version: 5, // QR Code version (1-40, lower = simpler)
+    color: { 
+      dark: '#151617', 
+      light: '#EEE9DF' 
+    },
   });
   return qrBase64;
 };

@@ -8,72 +8,69 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── User Palette (public site) ──
-        background:     '#728EB7',        // Slate Blue
-        'bg-secondary': '#5E7BA4',        // Deep Slate Blue
-        surface:        '#8DA7CC',        // Soft Steel Blue Surface
-        'surface-light':'#8DA7CC',        // Soft Steel Blue Light Surface
-        'surface-dark': '#343C4E',        // Primary Dark Charcoal Navy
-        primary:        '#343C4E',        // Deep Navy Slate
-        secondary:      '#2A629C',        // Royal Steel Blue
-        'text-primary': '#F5F3F5',        // Soft Off-White
-        'text-muted':   '#D3CCD0',        // Silver Muted Gray
-        'text-secondary':'#D3CCD0',
+        // ── StageCase Design System Base Palette ──
+        background:      '#0D1117',        // Background Primary
+        'bg-primary':    '#0D1117',        // Background Primary
+        'bg-secondary':  '#161B22',        // Background Secondary
+        card:            '#1C2128',        // Card
+        surface:         '#22272E',        // Surface
+        primary:         '#2D6F73',        // Jade Primary
+        accent:          '#B89B5E',        // Gold Accent
+        'text-primary':  '#F3F4F6',        // Text Primary
+        'text-secondary':'#B6BDC8',        // Text Secondary
+        muted:           '#7D8590',        // Muted
+        border:          '#30363D',        // Border
+        
+        // Status Colors
+        success:         '#3FB950',
+        warning:         '#D29922',
+        danger:          '#F85149',
+        error:           '#F85149',
 
-        // ── Admin Panel — dedicated dark tokens for clear contrast ──
-        'admin-bg':      '#141820',        // Very dark navy — page bg
-        'admin-sidebar': '#1A2030',        // Slightly lighter — sidebar
-        'admin-surface': '#222A3A',        // Card / panel surface
-        'admin-card':    '#2A3448',        // Elevated card
-        'admin-border':  'rgba(245,243,245,0.08)',
-        'admin-muted':   '#8DA7CC',        // Muted text in admin
-        'admin-accent':  '#2A629C',        // Accent blue
-
-        // Legacy Aliases
+        // Brand Aliases
         jade: {
-          DEFAULT: '#2A629C',         // Mapped to Secondary Blue
-          dark:    '#343C4E',         // Mapped to Primary Navy
-          light:   '#8DA7CC',
-          subtle:  'rgba(42, 98, 156, 0.15)',
+          DEFAULT: '#2D6F73',
+          hover:   '#357E82',
+          subtle:  'rgba(45, 111, 115, 0.15)',
         },
-
         gold: {
-          DEFAULT: '#2A629C',
-          dark:    '#343C4E',
-          light:   '#8DA7CC',
-          subtle:  'rgba(42, 98, 156, 0.15)',
+          DEFAULT: '#B89B5E',
+          hover:   '#C6A96C',
+          subtle:  'rgba(184, 155, 94, 0.15)',
         },
 
-        rust: {
-          DEFAULT: '#2A629C',
-          dark:    '#343C4E',
-          light:   '#8DA7CC',
+        // ── Band Specific Colors (Banners, Badges, Tickets, Accent Cards) ──
+        'crayon-case': {
+          DEFAULT: '#2D6F73',
+          accent:  '#D6B46B',
+        },
+        'reality-club': {
+          DEFAULT: '#5D4E89',
+          accent:  '#D8C5A2',
+        },
+        'the-milo': {
+          DEFAULT: '#6E8B6B',
+          accent:  '#C9A46A',
+        },
+        'wave-to-earth': {
+          DEFAULT: '#4F6D8C',
+          accent:  '#BFCFD7',
         },
 
-        'dark-matte': '#343C4E',
-        ivory: {
-          DEFAULT: '#F5F3F5',
-          dark:    '#D3CCD0',
-          light:   '#FFFFFF',
-        },
-
-        // Borders
-        border:          'rgba(245, 243, 245, 0.15)',
-        'border-hover':  'rgba(245, 243, 245, 0.3)',
-        'border-hover':    'rgba(255, 255, 255, 0.16)',
-        'border-jade':     'rgba(45, 111, 115, 0.4)',
-        'border-gold':     'rgba(184, 155, 94, 0.4)',
-
-        // Status
-        success: '#4CAF7A',
-        warning: '#E7B567',
-        error:   '#D65A5A',
+        // Admin Panel Aliases
+        'admin-bg':      '#0D1117',
+        'admin-sidebar': '#161B22',
+        'admin-surface': '#22272E',
+        'admin-card':    '#1C2128',
+        'admin-border':  '#30363D',
+        'admin-muted':   '#7D8590',
+        'admin-accent':  '#2D6F73',
       },
 
       fontFamily: {
-        sans:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Outfit', 'Inter', 'sans-serif'],
-        mono:    ['JetBrains Mono', 'monospace'],
+        sans:    ['Inter', 'Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Poppins', 'Inter', 'sans-serif'],
+        mono:    ['JetBrains Mono', 'Consolas', 'monospace'],
       },
 
       borderRadius: {
@@ -81,27 +78,26 @@ export default {
         'sm':      '6px',
         'DEFAULT': '10px',
         'md':      '12px',
-        'lg':      '16px',
-        'xl':      '20px',
-        '2xl':     '24px',
-        '3xl':     '32px',
+        'card':    '18px',
+        'modal':   '20px',
         'full':    '9999px',
       },
 
       boxShadow: {
-        'card':       '0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3)',
-        'card-hover': '0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 20px rgba(45, 111, 115, 0.15)',
-        'jade-glow':  '0 0 25px rgba(45, 111, 115, 0.25)',
-        'gold-glow':  '0 0 25px rgba(184, 155, 94, 0.25)',
-        'floating':   '0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-        'dropdown':   '0 16px 36px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.08)',
+        'card':       '0 4px 20px rgba(0, 0, 0, 0.3)',
+        'card-hover': '0 8px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px #B89B5E',
+        'modal':      '0 20px 50px rgba(0, 0, 0, 0.6)',
+        'dropdown':   '0 12px 40px rgba(0, 0, 0, 0.5)',
+      },
+
+      transitionDuration: {
+        '250': '250ms',
       },
 
       animation: {
-        'fade-in':      'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'slide-up':     'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'scale-in':     'scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-        'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
+        'fade-in':    'fadeIn 0.25s ease-out forwards',
+        'slide-up':   'slideUp 0.25s ease-out forwards',
+        'slide-down': 'slideDown 0.25s ease-out forwards',
       },
 
       keyframes: {
@@ -110,16 +106,12 @@ export default {
           '100%': { opacity: '1' },
         },
         slideUp: {
-          '0%':   { opacity: '0', transform: 'translateY(16px)' },
+          '0%':   { opacity: '0', transform: 'translateY(12px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        scaleIn: {
-          '0%':   { opacity: '0', transform: 'scale(0.97)' },
-          '100%': { opacity: '1', transform: 'scale(1)' },
-        },
-        pulseSubtle: {
-          '0%, 100%': { opacity: '0.7' },
-          '50%':      { opacity: '1'   },
+        slideDown: {
+          '0%':   { opacity: '0', transform: 'translateY(-12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },

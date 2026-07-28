@@ -13,15 +13,24 @@ const createBooking = async (req, res, next) => {
     // items: [{ ticket_category_id, quantity, seat_ids: [] }]
 
     const concert = await Concert.findByPk(concert_id);
-    if (!concert) return error(res, 'Concert not found', 404);
+    if (!concert) {
+      await t.rollback();
+      return error(res, 'Concert not found', 404);
+    }
 
     let totalPrice = 0;
     const detailsToCreate = [];
 
     for (const item of items) {
       const category = await TicketCategory.findByPk(item.ticket_category_id, { lock: t.LOCK.UPDATE, transaction: t });
-      if (!category) { await t.rollback(); return error(res, `Category not found`, 404); }
-      if (category.available < item.quantity) { await t.rollback(); return error(res, `Not enough tickets for ${category.name}`, 400); }
+      if (!category) {
+        await t.rollback();
+        return error(res, `Category not found`, 404);
+      }
+      if (category.available < item.quantity) {
+        await t.rollback();
+        return error(res, `Not enough tickets for ${category.name}`, 400);
+      }
 
       const subtotal = parseFloat(category.price) * item.quantity;
       totalPrice += subtotal;
@@ -30,7 +39,10 @@ const createBooking = async (req, res, next) => {
       if (item.seat_ids && item.seat_ids.length > 0) {
         for (const seatId of item.seat_ids) {
           const seat = await Seat.findOne({ where: { id: seatId, status: 'available' }, lock: t.LOCK.UPDATE, transaction: t });
-          if (!seat) { await t.rollback(); return error(res, `Seat ${seatId} unavailable`, 400); }
+          if (!seat) {
+            await t.rollback();
+            return error(res, `Seat ${seatId} unavailable`, 400);
+          }
           await seat.update({ status: 'reserved' }, { transaction: t });
         }
       }
@@ -56,17 +68,28 @@ const createBooking = async (req, res, next) => {
 
     await t.commit();
 
-    // Notify
-    await Notification.create({
-      user_id: req.user.id,
-      title: 'Booking Created',
-      message: `Your booking ${bookingCode} is awaiting payment. Complete payment within 2 hours.`,
-      type: 'booking',
-    });
+    // Notify (after commit, so no rollback needed in this section)
+    try {
+      await Notification.create({
+        user_id: req.user.id,
+        title: 'Booking Created',
+        message: `Your booking ${bookingCode} is awaiting payment. Complete payment within 2 hours.`,
+        type: 'booking',
+      });
+    } catch (notifErr) {
+      // Log but don't fail the booking
+      console.error('Notification creation failed:', notifErr);
+    }
 
     const fullBooking = await Booking.findByPk(booking.id, { include: ['details', 'payment'] });
     return success(res, fullBooking, 'Booking created successfully', 201);
-  } catch (err) { await t.rollback(); next(err); }
+  } catch (err) {
+    // Only rollback if transaction hasn't been committed
+    if (!t.finished) {
+      await t.rollback();
+    }
+    next(err);
+  }
 };
 
 // GET /api/bookings/my

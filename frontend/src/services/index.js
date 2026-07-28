@@ -21,6 +21,7 @@ export const bookingService = {
 };
 
 export const paymentService = {
+  createGateway: (bookingId) => api.post(`/payments/${bookingId}/gateway`),
   uploadProof: (bookingId, formData) =>
     api.post(`/payments/${bookingId}/upload`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
