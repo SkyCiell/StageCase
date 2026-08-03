@@ -25,6 +25,7 @@ export default function AdminDashboard() {
     queryKey: ["admin-dashboard"],
     queryFn: () => adminService.dashboard(),
     select: (d) => d.data.data,
+    refetchInterval: 3000,
   });
 
   const stats          = data?.stats || {};

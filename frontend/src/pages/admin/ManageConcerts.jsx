@@ -15,13 +15,14 @@ export default function ManageConcerts() {
     queryKey: ["admin-concerts"],
     queryFn: () => adminService.concerts(),
     select: (d) => d.data.data,
+    refetchInterval: 3000,
   });
 
   const createMutation = useMutation({
     mutationFn: (fd) => adminService.createConcert(fd),
     onSuccess: () => { 
       toast.success("Concert created!"); 
-      queryClient.invalidateQueries(["admin-concerts"]); 
+      queryClient.invalidateQueries(); 
       setIsOpen(false);
       setForm({ title: "", date: "", time: "", venue_id: "", description: "" });
     },
@@ -30,7 +31,7 @@ export default function ManageConcerts() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => adminService.deleteConcert(id),
-    onSuccess: () => { toast.success("Concert deleted."); queryClient.invalidateQueries(["admin-concerts"]); },
+    onSuccess: () => { toast.success("Concert deleted."); queryClient.invalidateQueries(); },
     onError: (err) => toast.error(err.response?.data?.message || "Failed to delete concert."),
   });
 

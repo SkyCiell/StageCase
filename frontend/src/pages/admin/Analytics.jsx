@@ -8,10 +8,17 @@ export default function Analytics() {
     queryKey: ['admin-dashboard'],
     queryFn: () => adminService.dashboard(),
     select: (d) => d.data.data,
+    refetchInterval: 3000,
   });
 
-  const monthlyRevenue = data?.monthlyRevenue || [];
-  const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.revenue || 0), 1);
+  const stats = data?.stats || {};
+  const monthlyRevenue = (data?.monthlyRevenue || []).map(m => ({
+    ...m,
+    revenue: parseFloat(m.revenue || 0),
+    transactions: parseInt(m.transactions || 0, 10),
+  }));
+
+  const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.revenue), 1);
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -27,10 +34,10 @@ export default function Analytics() {
       {data && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Total Revenue', value: formatCurrency(data.totalRevenue || 0), icon: DollarSign, accent: true },
-            { label: 'Total Bookings', value: (data.totalBookings || 0).toLocaleString(), icon: Ticket },
-            { label: 'Total Concerts', value: (data.totalConcerts || 0).toLocaleString(), icon: Music },
-            { label: 'Total Users', value: (data.totalUsers || 0).toLocaleString(), icon: Users },
+            { label: 'Total Revenue', value: formatCurrency(stats.totalRevenue || 0), icon: DollarSign, accent: true },
+            { label: 'Total Bookings', value: (stats.totalBookings || 0).toLocaleString(), icon: Ticket },
+            { label: 'Total Concerts', value: (stats.totalConcerts || 0).toLocaleString(), icon: Music },
+            { label: 'Total Users', value: (stats.totalUsers || 0).toLocaleString(), icon: Users },
           ].map((stat) => {
             const Icon = stat.icon;
             return (

@@ -5,7 +5,7 @@ const getNotifications = async (req, res, next) => {
   try {
     const notifications = await Notification.findAll({
       where: { user_id: req.user.id },
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       limit: 50,
     });
     return success(res, notifications);

@@ -43,7 +43,7 @@ const getAllUsers = async (req, res, next) => {
     const data = await User.findAndCountAll({
       where,
       attributes: { exclude: ['password', 'reset_token', 'reset_token_expires'] },
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       limit: l,
       offset,
     });

@@ -25,19 +25,29 @@ const createGatewayPayment = async (req, res, next) => {
     const payment = await Payment.findOne({ where: { booking_id: bookingId } });
     if (!payment) return error(res, 'Payment record not found', 404);
 
-    // Prepare items for Midtrans
-    const items = booking.details.map(detail => ({
-      id: detail.id,
-      price: parseInt(detail.unit_price),
-      quantity: detail.quantity,
-      name: `${booking.concert.title} - ${detail.ticketCategory.name}`
-    }));
+    // Prepare items for Midtrans (Name must be <= 50 chars, gross_amount must equal sum of items)
+    const items = booking.details.map(detail => {
+      const catName = detail.ticketCategory ? detail.ticketCategory.name : 'Ticket';
+      const rawName = `${booking.concert.title} - ${catName}`;
+      const name = rawName.length > 50 ? rawName.slice(0, 47) + '...' : rawName;
+      const price = Math.round(parseFloat(detail.unit_price || 0));
+      const quantity = parseInt(detail.quantity || 1, 10);
+      return {
+        id: String(detail.id).slice(0, 50),
+        price,
+        quantity,
+        name,
+      };
+    });
+
+    const calculatedGrossAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const grossAmount = calculatedGrossAmount > 0 ? calculatedGrossAmount : Math.round(parseFloat(booking.total_price));
 
     // Create Snap transaction parameter
     const parameter = {
       transaction_details: {
         order_id: `${booking.booking_code}-${Date.now()}`,
-        gross_amount: parseInt(booking.total_price)
+        gross_amount: grossAmount,
       },
       item_details: items,
       customer_details: {

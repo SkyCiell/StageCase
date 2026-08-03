@@ -5,40 +5,43 @@ const { Op } = require('sequelize');
 
 const getDashboard = async (req, res, next) => {
   try {
-    const [totalUsers, totalConcerts, totalBookings, revenueResult, recentBookings, monthlyRevenue] = await Promise.all([
+    const isPostgres = sequelize.getDialect() === 'postgres';
+
+    const [totalUsers, totalConcerts, totalBookings, approvedPaymentSum, bookingSum, recentBookings] = await Promise.all([
       User.count({ where: { role: 'user' } }),
       Concert.count(),
-      Booking.count({ where: { status: 'confirmed' } }),
+      Booking.count(),
       Payment.sum('amount', { where: { status: 'approved' } }),
+      Booking.sum('total_price', { where: { status: { [Op.ne]: 'cancelled' } } }),
       Booking.findAll({
         limit: 10,
-        order: [['created_at', 'DESC']],
+        order: [['createdAt', 'DESC']],
         include: [
           { association: 'user', attributes: ['name', 'email'] },
           { model: Concert, as: 'concert', attributes: ['title'] },
           { association: 'payment' },
         ],
       }),
-      // Monthly revenue for last 6 months
-      sequelize.query(`
-        SELECT 
-          DATE_FORMAT(p.created_at, '%Y-%m') as month,
-          SUM(p.amount) as revenue,
-          COUNT(*) as transactions
-        FROM payments p
-        WHERE p.status = 'approved'
-          AND p.created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-        GROUP BY month
-        ORDER BY month ASC
-      `, { type: sequelize.QueryTypes.SELECT }),
     ]);
+
+    let monthlyRevenue = [];
+    try {
+      const monthlyQuery = isPostgres
+        ? `SELECT TO_CHAR(created_at, 'YYYY-MM') as month, SUM(total_price) as revenue, COUNT(*) as transactions FROM bookings WHERE status != 'cancelled' AND created_at >= NOW() - INTERVAL '6 MONTH' GROUP BY month ORDER BY month ASC`
+        : `SELECT DATE_FORMAT(created_at, '%Y-%m') as month, SUM(total_price) as revenue, COUNT(*) as transactions FROM bookings WHERE status != 'cancelled' AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY month ORDER BY month ASC`;
+      monthlyRevenue = await sequelize.query(monthlyQuery, { type: sequelize.QueryTypes.SELECT });
+    } catch (e) {
+      console.error('Monthly revenue query error:', e.message);
+    }
+
+    const totalRevenue = approvedPaymentSum || bookingSum || 0;
 
     return success(res, {
       stats: {
         totalUsers,
         totalConcerts,
         totalBookings,
-        totalRevenue: revenueResult || 0,
+        totalRevenue: parseFloat(totalRevenue),
       },
       recentBookings,
       monthlyRevenue,

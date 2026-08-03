@@ -54,6 +54,7 @@ export const adminService = {
   updateConcert: (id, formData) => api.put(`/admin/concerts/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   deleteConcert: (id) => api.delete(`/admin/concerts/${id}`),
   // Venues
+  venues: (params) => api.get('/admin/venues', { params }),
   createVenue: (data) => api.post('/admin/venues', data),
   updateVenue: (id, data) => api.put(`/admin/venues/${id}`, data),
   deleteVenue: (id) => api.delete(`/admin/venues/${id}`),

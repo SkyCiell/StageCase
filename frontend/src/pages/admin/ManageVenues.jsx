@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Plus, MapPin } from 'lucide-react';
+import { Plus, MapPin, Music, Trash2 } from 'lucide-react';
 import { adminService } from '../../services';
 import Modal from '../../components/ui/Modal';
 
 export default function ManageVenues() {
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', city: '', province: '', address: '', capacity: '' });
+  const [form, setForm] = useState({ name: '', city: '', province: '', address: '', capacity: '', artist_name: '' });
 
   const { data: venues = [], isLoading } = useQuery({
     queryKey: ['admin-venues'],
-    queryFn: () => adminService.venues ? adminService.venues() : Promise.resolve({ data: { data: [] } }),
+    queryFn: () => adminService.venues({ limit: 100 }),
     select: (d) => d.data.data,
   });
 
@@ -20,11 +20,20 @@ export default function ManageVenues() {
     mutationFn: (data) => adminService.createVenue(data),
     onSuccess: () => {
       toast.success('Venue added!');
-      queryClient.invalidateQueries(['admin-venues']);
+      queryClient.invalidateQueries(); // Invalidate all queries across app for realtime sync
       setIsOpen(false);
-      setForm({ name: '', city: '', province: '', address: '', capacity: '' });
+      setForm({ name: '', city: '', province: '', address: '', capacity: '', artist_name: '' });
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Failed to add venue.'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => adminService.deleteVenue(id),
+    onSuccess: () => {
+      toast.success('Venue deleted!');
+      queryClient.invalidateQueries(); // Invalidate all queries across app for realtime sync
+    },
+    onError: (err) => toast.error(err.response?.data?.message || 'Failed to delete venue.'),
   });
 
   const handleSubmit = (e) => {
@@ -57,20 +66,54 @@ export default function ManageVenues() {
               <thead>
                 <tr className="border-b border-border text-muted font-mono uppercase">
                   <th className="pb-3 pt-2 font-semibold">Venue Name</th>
+                  <th className="pb-3 pt-2 font-semibold">Performing Band / Artist</th>
                   <th className="pb-3 pt-2 font-semibold">City</th>
                   <th className="pb-3 pt-2 font-semibold">Province</th>
                   <th className="pb-3 pt-2 font-semibold">Address</th>
                   <th className="pb-3 pt-2 font-semibold">Capacity</th>
+                  <th className="pb-3 pt-2 font-semibold text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {venues.map((v) => (
                   <tr key={v.id} className="hover:bg-surface/50 transition-colors">
                     <td className="py-3 font-semibold text-text-primary">{v.name}</td>
+                    <td className="py-3">
+                      {v.concerts && v.concerts.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5 items-center">
+                          {v.concerts.map((c) => (
+                            <span
+                              key={c.id}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gold/10 text-gold border border-gold/20"
+                              title={c.title}
+                            >
+                              <Music className="w-3 h-3" />
+                              {c.artist_name || c.title}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-muted text-[11px] font-mono italic">— No Band Assigned</span>
+                      )}
+                    </td>
                     <td className="py-3 text-text-secondary">{v.city}</td>
                     <td className="py-3 text-muted">{v.province || '—'}</td>
                     <td className="py-3 text-muted max-w-[200px] truncate">{v.address || '—'}</td>
                     <td className="py-3 font-mono font-semibold text-accent">{v.capacity ? `${v.capacity.toLocaleString()} seats` : 'N/A'}</td>
+                    <td className="py-3 text-right">
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete venue "${v.name}" and its associated concerts?`)) {
+                            deleteMutation.mutate(v.id);
+                          }
+                        }}
+                        disabled={deleteMutation.isLoading}
+                        className="p-1.5 text-muted hover:text-red-400 hover:bg-red-400/10 rounded transition-colors disabled:opacity-50"
+                        title="Delete Venue"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -91,6 +134,19 @@ export default function ManageVenues() {
               className="input-premium"
               placeholder="e.g. Istora Senayan"
               required
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-gold uppercase font-mono tracking-wider flex items-center gap-1.5">
+              <Music className="w-3.5 h-3.5" /> Performing Band / Artist (Optional)
+            </label>
+            <input
+              type="text"
+              value={form.artist_name}
+              onChange={e => setForm(p => ({ ...p, artist_name: e.target.value }))}
+              className="input-premium border-gold/30 focus:border-gold"
+              placeholder="e.g. Coldplay, Sheila On 7, Noah"
             />
           </div>
 

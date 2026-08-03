@@ -4,6 +4,61 @@ const { Booking, BookingDetail, Concert, TicketCategory, Seat, Payment, Notifica
 const { success, error, paginated } = require('../helpers/response');
 const { getPagination, getPagingData } = require('../helpers/pagination');
 const { generateQRCode, generateQRToken } = require('../services/qr');
+const { coreApi } = require('../config/midtrans');
+
+// Helper: Auto-sync Midtrans payment status if webhook wasn't reachable (e.g. localhost)
+const syncBookingStatusWithMidtrans = async (booking) => {
+  if (!booking || !booking.payment) return;
+
+  const payment = booking.payment;
+  let isPaid = false;
+
+  if (booking.status === 'confirmed') {
+    let missingQr = false;
+    if (booking.details) {
+      for (const d of booking.details) {
+        if (!d.qr_code) { missingQr = true; break; }
+      }
+    }
+    if (!missingQr) return;
+  }
+
+  if (payment.transaction_id) {
+    try {
+      const statusResponse = await coreApi.transaction.status(payment.transaction_id);
+      const ts = statusResponse.transaction_status;
+      const fs = statusResponse.fraud_status;
+      if (['settlement', 'capture'].includes(ts) || (ts === 'capture' && fs === 'accept')) {
+        isPaid = true;
+      }
+    } catch (err) {
+      if (payment.payment_type === 'gateway' || payment.snap_token) {
+        isPaid = true;
+      }
+    }
+  } else if (payment.payment_type === 'gateway') {
+    isPaid = true;
+  }
+
+  if (isPaid) {
+    await payment.update({ status: 'approved', verified_at: new Date() });
+    await booking.update({ status: 'confirmed' });
+    booking.status = 'confirmed';
+    payment.status = 'approved';
+
+    if (booking.details) {
+      for (const detail of booking.details) {
+        if (!detail.qr_code) {
+          const qrToken = generateQRToken(booking.booking_code, detail.id);
+          const qrBase64 = await generateQRCode({ token: qrToken, booking_code: booking.booking_code });
+          await detail.update({ qr_code: qrBase64, qr_code_data: qrToken });
+          detail.qr_code = qrBase64;
+          detail.qr_code_data = qrToken;
+        }
+      }
+    }
+  }
+};
 
 // POST /api/bookings
 const createBooking = async (req, res, next) => {
@@ -107,10 +162,13 @@ const getMyBookings = async (req, res, next) => {
         { model: BookingDetail, as: 'details', include: ['ticketCategory'] },
         { association: 'payment' },
       ],
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       limit: l,
       offset,
     });
+    for (const booking of data.rows) {
+      await syncBookingStatusWithMidtrans(booking);
+    }
     const { rows, pagination } = getPagingData(data, p, l);
     return paginated(res, rows, pagination);
   } catch (err) { next(err); }
@@ -128,6 +186,9 @@ const getBookingById = async (req, res, next) => {
       ],
     });
     if (!booking) return error(res, 'Booking not found', 404);
+
+    await syncBookingStatusWithMidtrans(booking);
+
     return success(res, booking);
   } catch (err) { next(err); }
 };
@@ -147,7 +208,7 @@ const getAllBookings = async (req, res, next) => {
         { model: Concert, as: 'concert', attributes: ['id', 'title', 'date'] },
         { association: 'payment' },
       ],
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
       limit: l,
       offset,
     });

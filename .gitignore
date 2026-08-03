@@ -39,3 +39,8 @@ frontend/.vite/
 
 # Mobile app (separate repo)
 mobile/
+
+# Agent tool files & secrets
+.mcp.json
+skills-lock.json
+.agents/

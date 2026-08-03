@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { getDashboard } = require('../controllers/adminController');
 const { getAllConcerts, createConcert, updateConcert, deleteConcert } = require('../controllers/concertController');
-const { createVenue, updateVenue, deleteVenue } = require('../controllers/venueController');
+const { getVenues, createVenue, updateVenue, deleteVenue } = require('../controllers/venueController');
 const { getAllUsers } = require('../controllers/userController');
 const { getAllBookings } = require('../controllers/bookingController');
 const { approvePayment, rejectPayment } = require('../controllers/paymentController');
@@ -25,6 +25,7 @@ router.put('/concerts/:id', uploadPoster.single('poster'), updateConcert);
 router.delete('/concerts/:id', deleteConcert);
 
 // Venues
+router.get('/venues', getVenues);
 router.post('/venues', createVenue);
 router.put('/venues/:id', updateVenue);
 router.delete('/venues/:id', deleteVenue);

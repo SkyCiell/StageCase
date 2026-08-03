@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
-const { Concert, Venue, TicketCategory, Favorite } = require('../models');
+const { sequelize } = require('../config/db');
+const { Concert, Venue, TicketCategory, Favorite, Seat, Booking, BookingDetail, Payment } = require('../models');
 const { success, error, paginated } = require('../helpers/response');
 const { getPagination, getPagingData } = require('../helpers/pagination');
 
@@ -103,12 +104,35 @@ const updateConcert = async (req, res, next) => {
 
 // DELETE /api/admin/concerts/:id
 const deleteConcert = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
     const concert = await Concert.findByPk(req.params.id);
-    if (!concert) return error(res, 'Concert not found', 404);
-    await concert.destroy();
+    if (!concert) {
+      await t.rollback();
+      return error(res, 'Concert not found', 404);
+    }
+
+    // Clean up dependent records
+    await Favorite.destroy({ where: { concert_id: concert.id }, transaction: t });
+
+    const bookings = await Booking.findAll({ where: { concert_id: concert.id } });
+    const bookingIds = bookings.map(b => b.id);
+    if (bookingIds.length > 0) {
+      await BookingDetail.destroy({ where: { booking_id: bookingIds }, transaction: t });
+      await Payment.destroy({ where: { booking_id: bookingIds }, transaction: t });
+      await Booking.destroy({ where: { concert_id: concert.id }, transaction: t });
+    }
+
+    await Seat.destroy({ where: { concert_id: concert.id }, transaction: t });
+    await TicketCategory.destroy({ where: { concert_id: concert.id }, transaction: t });
+
+    await concert.destroy({ transaction: t });
+    await t.commit();
     return success(res, null, 'Concert deleted');
-  } catch (err) { next(err); }
+  } catch (err) {
+    if (!t.finished) await t.rollback();
+    next(err);
+  }
 };
 
 module.exports = { getConcerts, getConcertBySlug, getAllConcerts, createConcert, updateConcert, deleteConcert };
