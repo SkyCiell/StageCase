@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Ticket, Star, ArrowRight } from 'lucide-react';
-import { getImageUrl } from '../../services/api';
+import { getImageUrl, getConcertPoster } from '../../services/api';
 import { formatCurrency, formatDateShort } from '../../utils';
-import userImg0 from '../../assets/images/images.jpg';
 
 const BAND_COLORS = {
   'Crayon Case':  { primary: '#2D6F73', accent: '#D6B46B' },
@@ -17,7 +16,7 @@ const ConcertCard = ({ concert, index = 0 }) => {
     ? Math.min(...concert.ticketCategories.map(c => parseFloat(c.price)))
     : 350000;
 
-  const posterSrc = concert.poster ? getImageUrl(concert.poster, 'posters') : userImg0;
+  const posterSrc = getConcertPoster(concert);
   const bandColor = BAND_COLORS[concert.artist_name] || { primary: '#2D6F73', accent: '#B89B5E' };
 
   const concertDate = new Date(concert.date);
@@ -39,12 +38,17 @@ const ConcertCard = ({ concert, index = 0 }) => {
           <div className="relative aspect-[16/9] overflow-hidden bg-surface flex-shrink-0">
             <img
               src={posterSrc}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110"
+            />
+            <img
+              src={posterSrc}
               alt={concert.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
             />
             {/* Date badge overlay */}
             <div
-              className="absolute top-3 left-3 flex flex-col items-center justify-center w-12 h-12 rounded-md shadow-lg text-white"
+              className="absolute z-20 top-3 left-3 flex flex-col items-center justify-center w-12 h-12 rounded-md shadow-lg text-white"
               style={{ backgroundColor: bandColor.primary }}
             >
               <span className="text-base font-black font-display leading-none">{day}</span>
@@ -53,14 +57,14 @@ const ConcertCard = ({ concert, index = 0 }) => {
 
             {/* Featured badge */}
             {concert.is_featured && (
-              <div className="absolute top-3 right-3 flex items-center gap-1 bg-accent text-[#0D1117] px-2 py-0.5 rounded-full text-[10px] font-bold">
+              <div className="absolute z-20 top-3 right-3 flex items-center gap-1 bg-accent text-[#0D1117] px-2 py-0.5 rounded-full text-[10px] font-bold">
                 <Star className="w-2.5 h-2.5" fill="currentColor" /> Featured
               </div>
             )}
 
             {/* Status bar */}
             <div
-              className="absolute bottom-0 left-0 right-0 h-1"
+              className="absolute z-20 bottom-0 left-0 right-0 h-1"
               style={{ backgroundColor: bandColor.primary }}
             />
           </div>

@@ -14,18 +14,13 @@ import {
   Radio
 } from "lucide-react";
 
-import userImg0 from "../../assets/images/images.jpg";
-import userImg1 from "../../assets/images/images1.jpg";
-import userImg2 from "../../assets/images/images2.jpg";
-import userImg3 from "../../assets/images/images3.jpg";
-
 const DEFAULT_PLAYLIST = [
   {
     id: "p1",
     title: "Gravits",
     artist: "Crayon Case",
     album: "Catch Twenty-three!! (2024)",
-    cover: userImg0,
+    cover: "https://f4.bcbits.com/img/a3253599809_10.jpg",
     duration: "4:15",
     bandColor: "#2D6F73"
   },
@@ -34,7 +29,7 @@ const DEFAULT_PLAYLIST = [
     title: "Anything You Want",
     artist: "Reality Club",
     album: "Reality Club Presents... (2023)",
-    cover: userImg1,
+    cover: "https://i.scdn.co/image/ab67616d0000b273c607bcd8355681ab4fac2968",
     duration: "3:50",
     bandColor: "#5D4E89"
   },
@@ -43,7 +38,7 @@ const DEFAULT_PLAYLIST = [
     title: "Malaikat",
     artist: "The Milo",
     album: "Let Me Begin (2003)",
-    cover: userImg2,
+    cover: "https://i.scdn.co/image/ab67616d0000b273df3a0ec97de41c2cfadf70c5",
     duration: "5:10",
     bandColor: "#6E8B6B"
   },
@@ -52,7 +47,7 @@ const DEFAULT_PLAYLIST = [
     title: "bad",
     artist: "Wave to Earth",
     album: "0.1 flaws and all. (2023)",
-    cover: userImg3,
+    cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOcuS9GbJkWZ3XG2ISFvtzV7EbPJzcVmKZ-X8Y5YqXx_ZdlxmgqANb-Nbb&s=10",
     duration: "4:23",
     bandColor: "#4F6D8C"
   }

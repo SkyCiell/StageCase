@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Music, Calendar } from 'lucide-react';
+import { ARTIST_COVERS } from '../../services/api';
 
 const ARTISTS = [
   {
@@ -11,6 +12,7 @@ const ARTISTS = [
     origin: 'Surabaya, East Java',
     bio: 'Surabaya indie duo Aiden and fein blending noise-pop and shoegaze guitar textures.',
     slug: '/concerts?artist=Crayon+Case',
+    image: ARTIST_COVERS['Crayon Case'],
   },
   {
     name: 'Reality Club',
@@ -20,6 +22,7 @@ const ARTISTS = [
     origin: 'Jakarta, DKI Jakarta',
     bio: 'Indie rock band formed in Jakarta known for romantic lyrics and cinematic string arrangements.',
     slug: '/concerts?artist=Reality+Club',
+    image: ARTIST_COVERS['Reality Club'],
   },
   {
     name: 'The Milo',
@@ -29,6 +32,7 @@ const ARTISTS = [
     origin: 'Bandung, West Java',
     bio: 'Pioneers of Indonesian shoegaze since 1996, creating wall-of-sound guitar distortion and dream pop.',
     slug: '/concerts?artist=The+Milo',
+    image: ARTIST_COVERS['The Milo'],
   },
   {
     name: 'Wave to Earth',
@@ -38,6 +42,7 @@ const ARTISTS = [
     origin: 'Seoul, South Korea',
     bio: 'South Korean indie trio delivering serene, oceanic lo-fi soundscapes and soft jazz hooks.',
     slug: '/concerts?artist=Wave+to+Earth',
+    image: ARTIST_COVERS['Wave to Earth'],
   },
 ];
 

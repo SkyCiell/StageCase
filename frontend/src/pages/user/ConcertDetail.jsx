@@ -11,7 +11,7 @@ import { concertService, favoriteService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import { useBooking } from '../../context/BookingContext';
 import Layout from '../../components/layout/Layout';
-import { getImageUrl } from '../../services/api';
+import { getImageUrl, getConcertPoster } from '../../services/api';
 import { formatDate, formatTime, formatCurrency } from '../../utils';
 
 const OFFICIAL_ARTIST_BIOS = {
@@ -110,15 +110,11 @@ export default function ConcertDetail() {
         {/* ── Hero Banner ── */}
         <div className="relative min-h-[360px] sm:min-h-[440px] flex items-end overflow-hidden border-b border-border">
           {/* Poster background */}
-          {concert.poster ? (
-            <img
-              src={getImageUrl(concert.poster, 'posters')}
-              alt={concert.title}
-              className="absolute inset-0 w-full h-full object-cover opacity-30"
-            />
-          ) : (
-            <div className="absolute inset-0" style={{ backgroundColor: `${bandColor.primary}20` }} />
-          )}
+          <img
+            src={getConcertPoster(concert)}
+            alt={concert.title}
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
+          />
 
           {/* Band color left stripe */}
           <div className="absolute top-0 left-0 bottom-0 w-1" style={{ backgroundColor: bandColor.primary }} />

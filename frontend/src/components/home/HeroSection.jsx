@@ -245,10 +245,16 @@ export default function HeroSection({
               style={{ borderColor: `${bandColor.primary}50` }}
             >
               <img
+                key={featuredConcert.id + '-bg'}
+                src={featuredConcert.image}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+              />
+              <img
                 key={featuredConcert.id}
                 src={featuredConcert.image}
                 alt={featuredConcert.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="relative z-10 w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
               />
 
               {/* Overlay info panel */}

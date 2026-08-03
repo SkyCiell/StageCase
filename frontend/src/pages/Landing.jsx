@@ -7,17 +7,11 @@ import {
   Quote, CheckCircle2, HelpCircle, ChevronUp
 } from 'lucide-react';
 import { concertService } from '../services';
-import { getImageUrl } from '../services/api';
+import { getImageUrl, getConcertPoster, ARTIST_COVERS } from '../services/api';
 import { formatDateShort, formatCurrency, formatCountdown } from '../utils';
 import HeroSection from '../components/home/HeroSection';
 import FeaturedArtists from '../components/home/FeaturedArtists';
 import Layout from '../components/layout/Layout';
-
-/* ─── Import User Images ─── */
-import userImg0 from '../assets/images/images.jpg';
-import userImg1 from '../assets/images/images1.jpg';
-import userImg2 from '../assets/images/images2.jpg';
-import userImg3 from '../assets/images/images3.jpg';
 
 /* ─── Band Color Map ─── */
 const BAND_COLORS = {
@@ -27,15 +21,12 @@ const BAND_COLORS = {
   'Wave to Earth':{ primary: '#4F6D8C', accent: '#BFCFD7' },
 };
 
-
-
-
 /* ─── Default Concert Shows ─── */
 const DEFAULT_SHOWS = [
-  { id: 'c1', number: '01', title: "CRAYON CASE '26", subtitle: "LIVE AT ISTORA SENAYAN", artist_name: "Crayon Case", desc: "Experience the monumental live tour of Crayon Case. Featuring Catch Twenty-three!! EP tracks and single 'Surabaya' with immersive noise-pop visuals.", image: userImg0, date: "2026-11-15", location: "Istora Senayan, Jakarta", startingPrice: 350000, slug: "crayon-case-live-in-jakarta-2026" },
-  { id: 'c2', number: '02', title: "REALITY CLUB TOUR", subtitle: "THE PALLAS JAKARTA", artist_name: "Reality Club", desc: "Dreamy nostalgic vibes and cinematic indie rock live at The Pallas. Featuring hits from 'Never Get Better' and 'Reality Club Presents...'.", image: userImg1, date: "2026-09-12", location: "The Pallas, Jakarta", startingPrice: 450000, slug: "reality-club-city-lights-jakarta-2026" },
-  { id: 'c3', number: '03', title: "THE MILO ACOUSTIC", subtitle: "THE KASABLANKA HALL", artist_name: "The Milo", desc: "Pioneers of Indonesian shoegaze bring warm acoustic-electric performances, featuring classics from 'Let Me Begin' and 'Photograph'.", image: userImg2, date: "2026-10-05", location: "Kasablanka Hall, Jakarta", startingPrice: 350000, slug: "the-milo-acoustic-jakarta-2026" },
-  { id: 'c4', number: '04', title: "WAVE TO EARTH TOUR", subtitle: "PARKIR TIMUR SENAYAN", artist_name: "Wave to Earth", desc: "South Korean indie band Wave to Earth brings their peaceful oceanic atmosphere and rainy-day lo-fi vibes live in Jakarta.", image: userImg3, date: "2026-11-08", location: "Parkir Timur Senayan, Jakarta", startingPrice: 500000, slug: "wave-to-earth-flaws-and-all-jakarta-2026" },
+  { id: 'c1', number: '01', title: "CRAYON CASE '26", subtitle: "LIVE AT ISTORA SENAYAN", artist_name: "Crayon Case", desc: "Experience the monumental live tour of Crayon Case. Featuring Catch Twenty-three!! EP tracks and single 'Surabaya' with immersive noise-pop visuals.", image: ARTIST_COVERS['Crayon Case'], date: "2026-11-15", location: "Istora Senayan, Jakarta", startingPrice: 350000, slug: "crayon-case-live-in-jakarta-2026" },
+  { id: 'c2', number: '02', title: "REALITY CLUB TOUR", subtitle: "THE PALLAS JAKARTA", artist_name: "Reality Club", desc: "Dreamy nostalgic vibes and cinematic indie rock live at The Pallas. Featuring hits from 'Never Get Better' and 'Reality Club Presents...'.", image: ARTIST_COVERS['Reality Club'], date: "2026-09-12", location: "The Pallas, Jakarta", startingPrice: 450000, slug: "reality-club-city-lights-jakarta-2026" },
+  { id: 'c3', number: '03', title: "THE MILO ACOUSTIC", subtitle: "THE KASABLANKA HALL", artist_name: "The Milo", desc: "Pioneers of Indonesian shoegaze bring warm acoustic-electric performances, featuring classics from 'Let Me Begin' and 'Photograph'.", image: ARTIST_COVERS['The Milo'], date: "2026-10-05", location: "Kasablanka Hall, Jakarta", startingPrice: 350000, slug: "the-milo-acoustic-jakarta-2026" },
+  { id: 'c4', number: '04', title: "WAVE TO EARTH TOUR", subtitle: "PARKIR TIMUR SENAYAN", artist_name: "Wave to Earth", desc: "South Korean indie band Wave to Earth brings their peaceful oceanic atmosphere and rainy-day lo-fi vibes live in Jakarta.", image: ARTIST_COVERS['Wave to Earth'], date: "2026-11-08", location: "Parkir Timur Senayan, Jakarta", startingPrice: 500000, slug: "wave-to-earth-flaws-and-all-jakarta-2026" },
 ];
 
 /* ─── Ticket Tiers ─── */
@@ -82,7 +73,7 @@ export default function Landing() {
         subtitle: c.venue ? `${c.venue.name}, ${c.venue.city}`.toUpperCase() : 'LIVE TOUR 2026',
         artist_name: c.artist_name || '',
         desc: c.description || DEFAULT_SHOWS[i % DEFAULT_SHOWS.length]?.desc,
-        image: c.poster ? getImageUrl(c.poster, 'posters') : [userImg0, userImg1, userImg2, userImg3][i % 4],
+        image: getConcertPoster(c),
         date: c.date,
         location: c.venue ? `${c.venue.name}, ${c.venue.city}` : 'Jakarta, Indonesia',
         startingPrice: c.ticketCategories?.length ? Math.min(...c.ticketCategories.map(cat => parseFloat(cat.price))) : 350000,
@@ -150,7 +141,8 @@ export default function Landing() {
                       
                       {/* Concert Image */}
                       <div className="aspect-video relative overflow-hidden bg-surface">
-                        <img src={show.image} alt={show.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                        <img src={show.image} alt="" className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110" />
+                        <img src={show.image} alt={show.title} className="relative z-10 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" />
                         <div 
                           className="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[11px] font-bold font-mono uppercase tracking-wider"
                           style={{ backgroundColor: bandColor.primary, color: '#F3F4F6' }}
