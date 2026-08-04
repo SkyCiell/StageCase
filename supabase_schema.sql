@@ -21,7 +21,7 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
-    CREATE TYPE booking_status AS ENUM ('pending', 'waiting_payment', 'payment_review', 'confirmed', 'cancelled', 'expired');
+    CREATE TYPE booking_status AS ENUM ('pending', 'waiting_payment', 'payment_review', 'confirmed', 'cancelled', 'expired', 'rejected');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;

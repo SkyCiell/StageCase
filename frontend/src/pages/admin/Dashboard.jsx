@@ -94,19 +94,30 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {recentBookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-surface/50 transition-colors">
-                    <td className="py-3 font-mono font-bold text-accent">#{b.booking_code}</td>
-                    <td className="py-3 font-semibold text-text-primary">{b.user?.name || "—"}</td>
-                    <td className="py-3 text-text-secondary truncate max-w-[200px]">{b.concert?.title || "—"}</td>
-                    <td className="py-3 font-mono font-semibold text-text-primary">{formatCurrency(b.total_price)}</td>
-                    <td className="py-3 text-right">
-                      <span className={b.status === "confirmed" ? "badge-jade" : "badge-gold"}>
-                        {getStatusLabel(b.status)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {recentBookings.map((b) => {
+                  const isRejected = b.status === "rejected" || b.status === "cancelled" || b.payment?.status === "rejected";
+                  const isConfirmed = b.status === "confirmed" || b.payment?.status === "approved";
+
+                  return (
+                    <tr key={b.id} className="hover:bg-surface/50 transition-colors">
+                      <td className="py-3 font-mono font-bold text-accent">#{b.booking_code}</td>
+                      <td className="py-3 font-semibold text-text-primary">{b.user?.name || "—"}</td>
+                      <td className="py-3 text-text-secondary truncate max-w-[200px]">{b.concert?.title || "—"}</td>
+                      <td className="py-3 font-mono font-semibold text-text-primary">{formatCurrency(b.total_price)}</td>
+                      <td className="py-3 text-right">
+                        <span className={
+                          isRejected
+                            ? "bg-danger text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm"
+                            : isConfirmed
+                            ? "badge-jade"
+                            : "badge-gold"
+                        }>
+                          {isRejected ? "REJECTED" : isConfirmed ? "CONFIRMED" : getStatusLabel(b.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

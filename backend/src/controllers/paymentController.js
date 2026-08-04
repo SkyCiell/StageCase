@@ -1,8 +1,35 @@
-const { Payment, Booking, BookingDetail, Notification, Concert, User } = require('../models');
+const { Payment, Booking, BookingDetail, Notification, Concert, User, Seat, TicketCategory } = require('../models');
 const { success, error } = require('../helpers/response');
 const { generateQRCode, generateQRToken } = require('../services/qr');
 const { snap, coreApi } = require('../config/midtrans');
 const crypto = require('crypto');
+
+// Helper to restore inventory/seats when booking is rejected or cancelled
+const releaseBookingInventory = async (bookingId) => {
+  try {
+    const booking = await Booking.findByPk(bookingId, {
+      include: [{ model: BookingDetail, as: 'details' }]
+    });
+    if (!booking || !booking.details) return;
+
+    for (const detail of booking.details) {
+      if (detail.ticket_category_id) {
+        const category = await TicketCategory.findByPk(detail.ticket_category_id);
+        if (category) {
+          await category.increment('available', { by: detail.quantity || 1 });
+        }
+      }
+      if (detail.seat_id) {
+        const seat = await Seat.findByPk(detail.seat_id);
+        if (seat && seat.status === 'reserved') {
+          await seat.update({ status: 'available' });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error releasing booking inventory:', err);
+  }
+};
 
 // POST /api/payments/:bookingId/gateway - Create payment with Midtrans (OTOMATIS)
 const createGatewayPayment = async (req, res, next) => {
@@ -255,9 +282,8 @@ const approvePayment = async (req, res, next) => {
     const payment = await Payment.findByPk(req.params.id, {
       include: [{ model: Booking, as: 'booking', include: ['details', 'user'] }],
     });
-    if (!payment) return error(res, 'Payment not found', 404);
-    if (payment.status !== 'submitted') {
-      return error(res, 'Payment is not in submitted state', 400);
+    if (['approved', 'rejected'].includes(payment.status)) {
+      return error(res, 'Payment is already finalized', 400);
     }
 
     await payment.update({ 
@@ -296,15 +322,24 @@ const rejectPayment = async (req, res, next) => {
   try {
     const { reason } = req.body;
     const payment = await Payment.findByPk(req.params.id, {
-      include: [{ model: Booking, as: 'booking' }],
+      include: [{ model: Booking, as: 'booking', include: ['details'] }],
     });
     if (!payment) return error(res, 'Payment not found', 404);
 
     await payment.update({ 
       status: 'rejected', 
-      rejection_reason: reason 
+      rejection_reason: reason || 'Bukti pembayaran tidak valid / tidak sesuai.'
     });
-    await payment.booking.update({ status: 'waiting_payment' });
+    await payment.booking.update({ status: 'rejected' });
+
+    if (payment.booking?.details) {
+      for (const d of payment.booking.details) {
+        await d.update({ qr_code: null, qr_code_data: null });
+      }
+    }
+
+    // Release ticket stock and reserved seats
+    await releaseBookingInventory(payment.booking.id);
 
     await Notification.create({
       user_id: payment.booking.user_id,

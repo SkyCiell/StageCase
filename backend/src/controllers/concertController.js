@@ -10,14 +10,17 @@ const getConcerts = async (req, res, next) => {
     const { page = 1, limit = 12, search, city, status = 'upcoming', featured, trending } = req.query;
     const { offset, limit: l, page: p } = getPagination(page, limit);
 
+    const isPostgres = sequelize.getDialect() === 'postgres';
+    const likeOp = isPostgres ? Op.iLike : Op.like;
+
     const where = {};
     if (status) where.status = status;
     if (featured) where.is_featured = true;
     if (trending) where.is_trending = true;
-    if (search) where.title = { [Op.like]: `%${search}%` };
+    if (search) where.title = { [likeOp]: `%${search}%` };
 
     const venueWhere = {};
-    if (city) venueWhere.city = { [Op.like]: `%${city}%` };
+    if (city) venueWhere.city = { [likeOp]: `%${city}%` };
 
     const data = await Concert.findAndCountAll({
       where,

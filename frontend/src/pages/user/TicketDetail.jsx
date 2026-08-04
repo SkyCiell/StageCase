@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
-import { ArrowLeft, Ticket, Calendar, Clock, MapPin, QrCode, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Ticket, Calendar, Clock, MapPin, QrCode, ShieldCheck, AlertCircle, Download } from 'lucide-react';
 import { bookingService } from '../../services';
 import Layout from '../../components/layout/Layout';
 import SCLogo from '../../components/SCLogo';
@@ -22,6 +22,68 @@ export default function TicketDetail() {
     queryFn: () => bookingService.getById(id),
     select: d => d.data.data,
   });
+
+  const handleDownloadQR = () => {
+    const svgElement = document.getElementById('qr-code-svg');
+    if (!svgElement) return;
+
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const URL = window.URL || window.webkitURL || window;
+    const blobURL = URL.createObjectURL(svgBlob);
+
+    const image = new Image();
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      const padding = 32;
+      const width = image.width + padding * 2;
+      const height = image.height + padding * 2 + 50;
+      
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Draw background card (crisp white)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw outer border
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(2, 2, width - 4, height - 4);
+
+      // Draw Header Text / Title
+      ctx.fillStyle = '#0D1117';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('STAGECASE DIGITAL E-TICKET', width / 2, 24);
+
+      // Draw SVG QR onto canvas
+      ctx.drawImage(image, padding, padding + 4);
+
+      // Draw Booking Code at bottom
+      ctx.fillStyle = '#2D6F73';
+      ctx.font = 'bold 15px monospace';
+      ctx.fillText(`#${booking.booking_code}`, width / 2, height - padding + 10);
+
+      // Subtitle
+      ctx.fillStyle = '#64748B';
+      ctx.font = '11px sans-serif';
+      ctx.fillText(`${booking.concert?.title || 'Concert E-Ticket Pass'}`, width / 2, height - 12);
+
+      const png = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = png;
+      downloadLink.download = `StageCase_QR_${booking.booking_code}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(blobURL);
+    };
+    image.src = blobURL;
+  };
 
   if (isLoading) {
     return (
@@ -44,6 +106,7 @@ export default function TicketDetail() {
   }
 
   const artistName = booking.concert?.artist_name || 'Crayon Case';
+  const isRejected = booking.status === 'rejected' || booking.status === 'cancelled' || booking.payment?.status === 'rejected';
   const bandColor = BAND_COLORS[artistName] || { primary: '#2D6F73', accent: '#B89B5E' };
 
   return (
@@ -59,8 +122,12 @@ export default function TicketDetail() {
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back to My Tickets
             </Link>
-            <span className={booking.status === 'confirmed' ? 'badge-jade' : 'badge-gold'}>
-              {getStatusLabel(booking.status)}
+            <span className={
+              isRejected 
+                ? 'bg-danger/20 text-danger border border-danger/30 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider' 
+                : booking.status === 'confirmed' ? 'badge-jade' : 'badge-gold'
+            }>
+              {isRejected ? 'REJECTED' : getStatusLabel(booking.status)}
             </span>
           </div>
 
@@ -69,7 +136,7 @@ export default function TicketDetail() {
             {/* Top band color stripe */}
             <div 
               className="h-1 rounded-t-card"
-              style={{ backgroundColor: bandColor.primary }}
+              style={{ backgroundColor: isRejected ? '#EF4444' : bandColor.primary }}
             />
 
             {/* Ticket Header Banner */}
@@ -89,7 +156,7 @@ export default function TicketDetail() {
             {/* Ticket Body */}
             <div className="p-6 sm:p-8 space-y-6">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider font-semibold block mb-1" style={{ color: bandColor.accent }}>
+                <span className="text-[10px] font-mono uppercase tracking-wider font-semibold block mb-1" style={{ color: isRejected ? '#EF4444' : bandColor.accent }}>
                   {artistName}
                 </span>
                 <h2 className="font-display font-bold text-text-primary text-2xl sm:text-3xl leading-tight mb-3">
@@ -109,6 +176,22 @@ export default function TicketDetail() {
                   </p>
                 )}
               </div>
+
+              {/* Rejection Warning Card */}
+              {isRejected && (
+                <div className="p-4 bg-danger/10 border border-danger/30 rounded-md space-y-2">
+                  <div className="flex items-center gap-2 text-danger font-bold text-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Pembayaran / Pesanan Ditolak Admin</span>
+                  </div>
+                  <p className="text-xs text-text-primary leading-relaxed">
+                    Alasan Penolakan: <strong className="text-danger">"{booking.payment?.rejection_reason || 'Bukti pembayaran tidak sesuai atau dibatalkan oleh admin.'}"</strong>
+                  </p>
+                  <p className="text-[11px] text-muted pt-1">
+                    Silakan lakukan pemesanan ulang atau hubungi layanan pelanggan jika terdapat kekeliruan.
+                  </p>
+                </div>
+              )}
 
               {/* Items Breakdown */}
               <div className="space-y-3">
@@ -130,11 +213,12 @@ export default function TicketDetail() {
               </div>
 
               {/* QR Code Pass */}
-              {booking.status === 'confirmed' ? (
+              {booking.status === 'confirmed' && !isRejected ? (
                 <div className="pt-6 border-t border-border text-center space-y-4">
                   <p className="text-xs font-mono uppercase tracking-wider font-semibold text-accent">Official Venue Gate Pass</p>
                   <div className="p-5 bg-white inline-block rounded-card border-2 border-border shadow-card">
                     <QRCodeSVG
+                      id="qr-code-svg"
                       value={booking.details?.[0]?.qr_code_data || booking.booking_code}
                       size={180}
                       bgColor="#FFFFFF"
@@ -142,14 +226,43 @@ export default function TicketDetail() {
                     />
                   </div>
                   <p className="text-xs text-muted font-mono font-bold tracking-wider">#{booking.booking_code}</p>
-                  <p className="text-xs text-text-secondary flex items-center justify-center gap-1.5">
+
+                  {/* Download QR Button */}
+                  <div>
+                    <button
+                      type="button"
+                      onClick={handleDownloadQR}
+                      className="btn-primary bg-accent hover:bg-gold text-background text-xs py-2.5 px-5 rounded-md inline-flex items-center gap-2 font-bold shadow-md transition-all cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <Download className="w-4 h-4" /> Download Pass QR Code (PNG)
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-text-secondary flex items-center justify-center gap-1.5 pt-1">
                     <ShieldCheck className="w-4 h-4 text-success" /> Scan this QR pass at the entrance gate for instant access
                   </p>
                 </div>
+              ) : (booking.status === 'waiting_payment' || booking.status === 'pending') ? (
+                <div className="p-6 bg-gold/10 border border-gold/30 rounded-md text-center space-y-3">
+                  <p className="text-xs text-text-primary font-bold">
+                    Pembayaran Belum Selesai (Waiting Payment)
+                  </p>
+                  <p className="text-xs text-muted">
+                    Silakan selesaikan pembayaran Anda untuk mengaktifkan E-Ticket resmi.
+                  </p>
+                  <Link
+                    to={`/booking/payment/${booking.id}`}
+                    className="btn-primary bg-gold text-background hover:bg-gold-light text-xs py-3 px-6 font-bold inline-flex items-center gap-2 justify-center"
+                  >
+                    Proceed to Payment Page <ArrowLeft className="w-4 h-4 rotate-180" />
+                  </Link>
+                </div>
               ) : (
                 <div className="p-4 bg-surface rounded-md border border-border text-center">
-                  <p className="text-xs text-accent font-medium">
-                    Digital QR Code pass will be issued automatically once your payment is verified.
+                  <p className={`text-xs font-medium ${isRejected ? 'text-danger' : 'text-accent'}`}>
+                    {isRejected 
+                      ? 'Tiket ini tidak berlaku karena pembayaran telah ditolak.' 
+                      : 'Digital QR Code pass will be issued automatically once your payment is verified.'}
                   </p>
                 </div>
               )}

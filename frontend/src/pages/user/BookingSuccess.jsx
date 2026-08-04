@@ -56,9 +56,15 @@ export default function BookingSuccess() {
 
           {/* Action Links */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/my-tickets" className="btn-primary text-xs py-3 px-6 justify-center">
-              <Ticket className="w-4 h-4" /> View My Digital Tickets
-            </Link>
+            {booking && (booking.status === 'waiting_payment' || booking.status === 'pending') ? (
+              <Link to={`/booking/payment/${booking.id}`} className="btn-primary bg-gold text-background hover:bg-gold-light text-xs py-3 px-6 justify-center font-bold">
+                <Ticket className="w-4 h-4" /> Pay Now / Complete Payment
+              </Link>
+            ) : (
+              <Link to="/my-tickets" className="btn-primary text-xs py-3 px-6 justify-center">
+                <Ticket className="w-4 h-4" /> View My Digital Tickets
+              </Link>
+            )}
             <Link to="/concerts" className="btn-secondary text-xs py-3 px-6 justify-center">
               <Compass className="w-4 h-4" /> Explore More Concerts
             </Link>

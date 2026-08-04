@@ -11,6 +11,12 @@ const syncBookingStatusWithMidtrans = async (booking) => {
   if (!booking || !booking.payment) return;
 
   const payment = booking.payment;
+
+  // Don't auto-confirm if explicitly rejected by admin or cancelled
+  if (payment.status === 'rejected' || booking.status === 'rejected' || booking.status === 'cancelled') {
+    return;
+  }
+
   let isPaid = false;
 
   if (booking.status === 'confirmed') {
@@ -32,12 +38,8 @@ const syncBookingStatusWithMidtrans = async (booking) => {
         isPaid = true;
       }
     } catch (err) {
-      if (payment.payment_type === 'gateway' || payment.snap_token) {
-        isPaid = true;
-      }
+      // Transaction status check failed, do not auto approve
     }
-  } else if (payment.payment_type === 'gateway') {
-    isPaid = true;
   }
 
   if (isPaid) {
@@ -198,6 +200,7 @@ const getAllBookings = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, status } = req.query;
     const { offset, limit: l, page: p } = getPagination(page, limit);
+
     const where = {};
     if (status) where.status = status;
 

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getDashboard } = require('../controllers/adminController');
+const { getDashboard, verifyTicketQR } = require('../controllers/adminController');
 const { getAllConcerts, createConcert, updateConcert, deleteConcert } = require('../controllers/concertController');
 const { getVenues, createVenue, updateVenue, deleteVenue } = require('../controllers/venueController');
 const { getAllUsers } = require('../controllers/userController');
@@ -14,6 +14,7 @@ router.use(authenticate, authorize('admin'));
 
 // Dashboard
 router.get('/dashboard', getDashboard);
+router.get('/verify-qr', verifyTicketQR);
 
 // Users
 router.get('/users', getAllUsers);

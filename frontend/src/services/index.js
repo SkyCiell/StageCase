@@ -60,10 +60,11 @@ export const adminService = {
   deleteVenue: (id) => api.delete(`/admin/venues/${id}`),
   // Users
   users: (params) => api.get('/admin/users', { params }),
-  // Bookings
+  // Bookings & QR Verification
   bookings: (params) => api.get('/admin/bookings', { params }),
   approvePayment: (id) => api.patch(`/admin/payments/${id}/approve`),
   rejectPayment: (id, reason) => api.patch(`/admin/payments/${id}/reject`, { reason }),
+  verifyQR: (code) => api.get('/admin/verify-qr', { params: { code } }),
   // Ticket categories
   createCategory: (data) => api.post('/admin/ticket-categories', data),
   updateCategory: (id, data) => api.put(`/admin/ticket-categories/${id}`, data),

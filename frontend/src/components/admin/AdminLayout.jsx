@@ -11,11 +11,13 @@ import {
   ExternalLink, 
   ChevronLeft, 
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  QrCode
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { getImageUrl } from "../../services/api";
 import SCLogo from "../SCLogo";
+import QRScannerModal from "./QRScannerModal";
 
 const ADMIN_NAV = [
   { to: "/admin",           label: "Overview",      icon: LayoutDashboard, exact: true },
@@ -48,6 +50,7 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
   const handleLogout = () => { logout(); navigate("/"); };
 
   return (
@@ -147,7 +150,14 @@ export default function AdminLayout() {
             <span className="text-xs font-mono text-muted uppercase tracking-wider">System Live</span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsScannerOpen(true)}
+              className="flex items-center gap-2 text-xs font-bold text-text-primary bg-surface hover:bg-surface/80 border border-border transition-colors py-1.5 px-3 rounded-md cursor-pointer"
+            >
+              <QrCode className="w-4 h-4 text-accent" />
+              <span>Verify Ticket Pass</span>
+            </button>
             <Link
               to="/"
               className="flex items-center gap-2 text-xs font-medium text-text-secondary hover:text-accent transition-colors btn-ghost py-1.5 px-3"
@@ -163,6 +173,9 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* Admin QR Gate Pass Authenticator Modal */}
+      <QRScannerModal isOpen={isScannerOpen} onClose={() => setIsScannerOpen(false)} />
     </div>
   );
 }

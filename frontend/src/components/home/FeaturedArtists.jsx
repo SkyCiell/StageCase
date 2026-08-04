@@ -143,16 +143,28 @@ export default function FeaturedArtists({ concerts = [] }) {
                       {artist.bio}
                     </p>
 
-                    {/* Color Swatches */}
-                    <div className="flex gap-2 mb-6">
-                      <div 
-                        className="flex-1 h-10 rounded-md opacity-80"
-                        style={{ backgroundColor: artist.primary }}
-                      />
-                      <div 
-                        className="flex-1 h-10 rounded-md opacity-60"
-                        style={{ backgroundColor: artist.accent }}
-                      />
+                    {/* Band Theme Palette */}
+                    <div className="mb-6 space-y-1.5">
+                      <p className="text-[10px] font-mono uppercase tracking-wider text-muted flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+                        Band Theme Palette
+                      </p>
+                      <div className="flex gap-2">
+                        <div 
+                          className="flex-1 h-8 rounded-md px-3 flex items-center justify-between text-[11px] font-mono font-semibold shadow-sm transition-opacity hover:opacity-100 opacity-90"
+                          style={{ backgroundColor: artist.primary, color: '#FFFFFF' }}
+                        >
+                          <span>Primary</span>
+                          <span className="text-[10px] opacity-80">{artist.primary}</span>
+                        </div>
+                        <div 
+                          className="flex-1 h-8 rounded-md px-3 flex items-center justify-between text-[11px] font-mono font-semibold shadow-sm transition-opacity hover:opacity-100 opacity-90"
+                          style={{ backgroundColor: artist.accent, color: '#0F172A' }}
+                        >
+                          <span>Accent</span>
+                          <span className="text-[10px] opacity-80">{artist.accent}</span>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Concert count & CTA */}

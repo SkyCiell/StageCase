@@ -8,7 +8,7 @@ const Booking = sequelize.define('Booking', {
   booking_code: { type: DataTypes.STRING(20), allowNull: false, unique: true },
   total_price: { type: DataTypes.DECIMAL(14, 2), allowNull: false },
   status: {
-    type: DataTypes.ENUM('pending', 'waiting_payment', 'payment_review', 'confirmed', 'cancelled', 'expired'),
+    type: DataTypes.ENUM('pending', 'waiting_payment', 'payment_review', 'confirmed', 'cancelled', 'expired', 'rejected'),
     defaultValue: 'pending',
   },
   expired_at: { type: DataTypes.DATE, allowNull: true },
