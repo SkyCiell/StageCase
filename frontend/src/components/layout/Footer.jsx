@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Ticket, Shield, HelpCircle, Mail, Music, Heart, ArrowRight } from "lucide-react";
+import { Ticket, Shield, ArrowRight } from "lucide-react";
 import SCLogo from "../SCLogo";
 
 const PLATFORM_LINKS = [

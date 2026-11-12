@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
-  Ticket, MapPin, Calendar, ArrowRight, Music, ChevronDown,
+  Ticket, MapPin, ArrowRight, ChevronDown,
   Quote, CheckCircle2, HelpCircle, ChevronUp
 } from 'lucide-react';
 import { concertService } from '../services';
-import { getImageUrl, getConcertPoster, ARTIST_COVERS } from '../services/api';
+import { getConcertPoster, ARTIST_COVERS } from '../services/api';
 import { formatDateShort, formatCurrency, formatCountdown } from '../utils';
 import HeroSection from '../components/home/HeroSection';
 import FeaturedArtists from '../components/home/FeaturedArtists';

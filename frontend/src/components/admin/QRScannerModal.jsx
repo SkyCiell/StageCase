@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { QrCode, Search, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, Ticket, User, Calendar, Camera, CameraOff, Upload, RefreshCw } from 'lucide-react';
+import { QrCode, Search, CheckCircle2, XCircle, AlertTriangle, Ticket, User, Calendar, Camera, CameraOff, Upload, RefreshCw } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { adminService } from '../../services';
@@ -111,7 +111,7 @@ export default function QRScannerModal({ isOpen, onClose }) {
       const decodedText = await html5QrCode.scanFile(file, true);
       setCode(decodedText);
       await verifyCode(decodedText);
-    } catch (err) {
+    } catch {
       setResult({
         status: 'INVALID',
         message: 'Could not detect or read a valid QR code from the uploaded image file.',

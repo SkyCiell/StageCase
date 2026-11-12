@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Calendar, MapPin, Ticket, ArrowRight, AlertCircle } from 'lucide-react';
+import { MapPin, Ticket, ArrowRight, AlertCircle } from 'lucide-react';
 import { formatDateShort, formatCurrency, getStatusLabel } from '../../utils';
 
 const BAND_COLORS = {

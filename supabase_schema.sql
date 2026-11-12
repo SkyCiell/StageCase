@@ -1,5 +1,5 @@
 -- StageCase Supabase PostgreSQL Schema & Seed Data
--- Project Ref: sobodjnoiqudfjwgztyx
+-- Project Ref: zrweznpbknokcxbxyfgt
 
 -- 1. Create Enums (if not existing)
 DO $$ BEGIN

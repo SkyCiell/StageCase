@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { User, Mail, Phone, Calendar, MapPin, CreditCard, ShieldCheck, Ticket, ArrowRight } from 'lucide-react';
+import { User, Calendar, MapPin, CreditCard, ShieldCheck, Ticket, ArrowRight } from 'lucide-react';
 import { bookingService } from '../../services';
 import { useBooking } from '../../context/BookingContext';
 import { useAuth } from '../../context/AuthContext';

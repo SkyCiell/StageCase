@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Plus, Trash2, Calendar, Clock, MapPin } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { adminService } from "../../services";
 import Modal from "../../components/ui/Modal";
 import { formatDateShort } from "../../utils";

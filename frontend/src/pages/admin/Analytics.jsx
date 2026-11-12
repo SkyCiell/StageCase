@@ -4,7 +4,7 @@ import { adminService } from '../../services';
 import { formatCurrency } from '../../utils';
 
 export default function Analytics() {
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: () => adminService.dashboard(),
     select: (d) => d.data.data,

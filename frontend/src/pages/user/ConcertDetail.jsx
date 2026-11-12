@@ -11,7 +11,7 @@ import { concertService, favoriteService } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import { useBooking } from '../../context/BookingContext';
 import Layout from '../../components/layout/Layout';
-import { getImageUrl, getConcertPoster } from '../../services/api';
+import { getConcertPoster } from '../../services/api';
 import { formatDate, formatTime, formatCurrency } from '../../utils';
 
 const OFFICIAL_ARTIST_BIOS = {

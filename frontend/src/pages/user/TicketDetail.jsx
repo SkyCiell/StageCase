@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
-import { ArrowLeft, Ticket, Calendar, Clock, MapPin, QrCode, ShieldCheck, AlertCircle, Download } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, ShieldCheck, AlertCircle, Download } from 'lucide-react';
 import { bookingService } from '../../services';
 import Layout from '../../components/layout/Layout';
 import SCLogo from '../../components/SCLogo';

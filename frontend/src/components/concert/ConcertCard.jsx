@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Ticket, Star, ArrowRight } from 'lucide-react';
-import { getImageUrl, getConcertPoster } from '../../services/api';
-import { formatCurrency, formatDateShort } from '../../utils';
+import { MapPin, Star, ArrowRight } from 'lucide-react';
+import { getConcertPoster } from '../../services/api';
+import { formatCurrency } from '../../utils';
 
 const BAND_COLORS = {
   'Crayon Case':  { primary: '#2D6F73', accent: '#D6B46B' },

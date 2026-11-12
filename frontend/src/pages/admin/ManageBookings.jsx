@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Check, X, FileText, Eye, QrCode, ShieldCheck } from "lucide-react";
+import { Check, X, Eye, QrCode, ShieldCheck } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { adminService, getImageUrl } from "../../services";
 import Modal from "../../components/ui/Modal";

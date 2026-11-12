@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Ticket, Search, CheckCircle2, Clock, FileCheck } from 'lucide-react';
+import { Ticket, CheckCircle2, Clock, FileCheck } from 'lucide-react';
 import { bookingService } from '../../services';
 import Layout from '../../components/layout/Layout';
 import BookingTicketCard from '../../components/ticket/BookingTicketCard';

@@ -5,7 +5,7 @@ import { formatCurrency } from '../../utils';
  * Premium Boarding Pass Inspired Concert Card
  * Apple Wallet / Ticketmaster aesthetic
  */
-export default function TicketCard({ concert, variant = 'default' }) {
+export default function TicketCard({ concert }) {
   const defaultColor = '#2D6F73';
   const accentColor = concert.accent_color || defaultColor;
 

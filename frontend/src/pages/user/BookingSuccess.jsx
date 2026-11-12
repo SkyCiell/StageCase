@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle2, Ticket, ArrowRight, Compass } from 'lucide-react';
+import { CheckCircle2, Ticket, Compass } from 'lucide-react';
 import { bookingService } from '../../services';
 import Layout from '../../components/layout/Layout';
 import { formatCurrency } from '../../utils';

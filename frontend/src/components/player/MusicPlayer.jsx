@@ -7,8 +7,6 @@ import {
   SkipForward, 
   Heart, 
   ListMusic, 
-  Volume2, 
-  VolumeX, 
   Maximize2, 
   X,
   Radio
@@ -57,10 +55,9 @@ export default function MusicPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIdx, setCurrentTrackIdx] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
   const [showExpanded, setShowExpanded] = useState(false);
-  const [progress, setProgress] = useState(35); // simulated 35% progress
+  const [progress] = useState(35); // simulated 35% progress
 
   const currentTrack = DEFAULT_PLAYLIST[currentTrackIdx];
 

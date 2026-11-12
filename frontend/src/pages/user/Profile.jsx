@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, User, Lock, Save, ShieldCheck, Mail, Phone } from "lucide-react";
+import { Camera, User, Lock, Save, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { userService } from "../../services";
 import { getImageUrl } from "../../services/api";

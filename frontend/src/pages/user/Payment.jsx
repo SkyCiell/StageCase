@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { CreditCard, FileText, Upload, CheckCircle2, ShieldCheck, QrCode, ArrowRight, Building2 } from 'lucide-react';
+import { CreditCard, FileText, Upload, ShieldCheck, QrCode, ArrowRight, Building2 } from 'lucide-react';
 import { bookingService, paymentService } from '../../services';
 import Layout from '../../components/layout/Layout';
 import { formatCurrency } from '../../utils';
@@ -81,15 +81,15 @@ export default function Payment() {
       const { snap_token } = response.data.data;
 
       window.snap.pay(snap_token, {
-        onSuccess: function(result) {
+        onSuccess: function() {
           toast.success('Payment successful! Generating your e-ticket...');
           setTimeout(() => navigate(`/booking/success/${id}`), 1500);
         },
-        onPending: function(result) {
+        onPending: function() {
           toast.success('Payment processing...');
           setTimeout(() => navigate(`/booking/success/${id}`), 1500);
         },
-        onError: function(result) {
+        onError: function() {
           toast.error('Payment failed. Please try again.');
         },
         onClose: function() {
